@@ -22,3 +22,5 @@ android/key.properties
 
 # Release artifacts
 release/
+
+.vercel
