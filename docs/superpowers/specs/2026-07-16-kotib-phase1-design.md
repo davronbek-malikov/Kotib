@@ -189,12 +189,32 @@ paint via an inline script in `index.html` to prevent flash; stored in `localSto
   than relying on Vercel's generated suffix.
 - **Two front doors, one build.** The same Vercel deployment serves both the browser app
   at `yordamchi.vercel.app` and the APK shell, so a single push updates both. Phase 1 is
-  usable on web and Android from day one; the web build carries no
-  native-only assumptions (§10.1).
+  usable on web and Android from day one (§10.1).
 - **Signing:** a new release keystore for Kotib, generated locally, **git-ignored**
   (mirrors Hamyon's `android/key.properties` layout).
 - **APK:** built locally via Gradle, attached to a GitHub Release. Rebuilt only when §3.1
   native capability changes — expected to be rare.
+
+### 10.1 Web / Android parity
+
+One codebase serves both targets, so every native call sits behind a capability check
+(`Capacitor.isNativePlatform()`, following Hamyon's `nativeStore.ts`). The web build must
+never assume a native bridge exists. Feature-by-feature:
+
+| Feature | Android (APK) | Web browser |
+| :-- | :-- | :-- |
+| All four Phase 1 features + Settings | Full | **Full — identical** |
+| Data persistence | `localStorage` + native `Preferences` mirror | `localStorage` only |
+| Reminders, app open | Native notification | In-app banner + chime |
+| Reminders, app closed | **Native exact alarm** | Not delivered (needs the deferred service worker) |
+| Spoken reminders | Native TTS | `speechSynthesis` where the browser supports it |
+| Haptics on swipe | Native | Silently skipped |
+| JSON export | Native share sheet | Browser file download |
+
+The honest summary: **web gets every feature; Android additionally gets alarms that fire
+with the app closed.** That closed-app alarm is the one thing the browser cannot do here,
+and it is precisely why the APK exists. No feature is Android-only otherwise, and no
+screen is degraded on web.
 
 ## 11. Deviations from `plan.md`
 
