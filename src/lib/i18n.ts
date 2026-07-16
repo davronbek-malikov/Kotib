@@ -33,7 +33,7 @@ const STRINGS: Record<string, Entry> = {
   'today.empty': {
     uz: "Bugun hali reja yo'q. Birinchisini qo'shing ＋",
     tr: 'Bugün için plan yok. İlkini ekleyin ＋',
-    en: 'No plans yet today. Add your first one ＋',
+    en: 'No plans yet today. Add your first ＋',
   },
   'today.done':    { uz: 'Bajarildi',   tr: 'Tamamlandı', en: 'Done' },
   'today.undo':    { uz: 'Qaytarish',   tr: 'Geri al',    en: 'Undo' },
