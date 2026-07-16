@@ -22,9 +22,9 @@ These are recorded here because three of them are one-way doors.
 
 | Decision | Value | Reversible? |
 | :-- | :-- | :-- |
-| Android `appId` | `com.kotib.app` | **No.** Changing it forces every user to uninstall/reinstall. Invisible to users, so a later rename does not require changing it. |
-| Baked-in shell URL | `https://kotib-app.vercel.app` | **No.** Changing it strands every installed APK. |
-| Display name | `Kotib` | **Yes.** Held in one constant + i18n; renaming to "Reja" later is a one-line change. |
+| Android `appId` | `com.yordamchi.app` | **No.** Changing it forces every user to uninstall/reinstall. Invisible to users, so a later rename does not require changing it. |
+| Baked-in shell URL | `https://yordamchi.vercel.app` | **No.** Changing it strands every installed APK. |
+| Display name | `Kotib` | **Yes.** Held in one constant + i18n; renaming to "Yordamchi" or "Reja" later is a one-line change. |
 | Update model | Live web shell (Capacitor `server.url`) | Effectively no — it defines what the APK does. |
 | Offline cold start | Deferred to a later phase | Yes. Additive; changes nothing else. |
 
@@ -44,7 +44,7 @@ The APK is a thin Capacitor shell whose only job is to load the live Vercel buil
 
 ```ts
 // capacitor.config.ts
-server: { url: 'https://kotib-app.vercel.app' }
+server: { url: 'https://yordamchi.vercel.app' }
 ```
 
 This is Hamyon's proven pattern. `git push` → Vercel builds → every installed phone has
@@ -185,8 +185,12 @@ paint via an inline script in `index.html` to prevent flash; stored in `localSto
   (exists, empty, public). The parent OneDrive repo will see it as an embedded repo; we
   do not commit the parent.
 - **Vercel:** project linked to the GitHub repo so every push to `main` auto-deploys —
-  this *is* the update engine. Alias `kotib-app.vercel.app` assigned explicitly rather
+  this *is* the update engine. Alias `yordamchi.vercel.app` assigned explicitly rather
   than relying on Vercel's generated suffix.
+- **Two front doors, one build.** The same Vercel deployment serves both the browser app
+  at `yordamchi.vercel.app` and the APK shell, so a single push updates both. Phase 1 is
+  usable on web and Android from day one; the web build carries no
+  native-only assumptions (§10.1).
 - **Signing:** a new release keystore for Kotib, generated locally, **git-ignored**
   (mirrors Hamyon's `android/key.properties` layout).
 - **APK:** built locally via Gradle, attached to a GitHub Release. Rebuilt only when §3.1
