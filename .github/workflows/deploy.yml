@@ -1,0 +1,59 @@
+name: Deploy to Vercel
+
+# The auto-update engine: a push to main lands on every installed phone.
+# The APK bundles no web assets, it just loads yordamchi.vercel.app — so
+# whatever this workflow deploys IS what users get on their next app launch,
+# with no reinstall.
+#
+# Requires one repository secret: VERCEL_TOKEN
+#   Create at https://vercel.com/account/settings/tokens (scope: Full Account)
+#   Add at https://github.com/davronbek-malikov/Kotib/settings/secrets/actions
+# Project and org ids are safe to commit — they are not credentials.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  VERCEL_ORG_ID: team_mfvw6wrLv3bngG1P74fu73JK
+  VERCEL_PROJECT_ID: prj_yamJYh44Zne7lBTvGVwsGhSBzHEb
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Never ship a broken build to phones that auto-update.
+      - name: Test
+        run: npm test
+
+      - name: Typecheck and build
+        run: npm run build
+
+      - name: Deploy to production
+        run: |
+          npm i -g vercel@latest
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          echo "Deployed: $DEPLOY_URL"
+          # Point the permanent, APK-baked URL at this deployment.
+          vercel alias set "$DEPLOY_URL" yordamchi.vercel.app --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Verify the live URL serves the new build
+        run: |
+          sleep 5
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://yordamchi.vercel.app)
+          echo "yordamchi.vercel.app -> $STATUS"
+          test "$STATUS" = "200"
