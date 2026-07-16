@@ -1,0 +1,25 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-family);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Mobile-first: 360–430px is the primary target (plan.md §3). */
+#root {
+  max-width: 520px;
+  margin-inline: auto;
+  min-height: 100dvh;
+  /* Room for the bottom tab bar + iOS home indicator. */
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+}
+
+button { font-family: inherit; }
+
+/* Thumb-first: every interactive target clears 44px (plan.md §2.1). */
+button, a, input, select { min-height: var(--touch-min); }
