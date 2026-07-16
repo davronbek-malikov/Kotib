@@ -27,8 +27,15 @@ as a second dictionary, so the two scripts cannot drift apart.
 The APK is a thin Capacitor shell that loads the live web build. It bundles **no
 web assets at all** — only `server.url`. So:
 
-> **Deploy the web build → every installed phone has the new version on next
-> launch. No reinstall, no app store, for every user.**
+> **`git push` → every installed phone has the new version on next launch.
+> No reinstall, no app store, for every user.**
+
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) does it on every
+push to `main`: run the tests, typecheck, build, deploy, re-point
+`yordamchi.vercel.app` at the new deployment, then verify it serves 200.
+
+**The tests gate the deploy on purpose.** A push reaches every phone within
+minutes, so a broken build would auto-ship to everyone. CI refuses to deploy one.
 
 The one exception is a **native** change — a new Capacitor plugin or Android
 permission. Those need a new APK:
@@ -44,14 +51,20 @@ share, filesystem, splash), including ones Phase 1 doesn't use yet.
 
 ### Deploying
 
+Just push. CI handles the rest.
+
 ```bash
-npm run build
-npx vercel --prod
-npx vercel alias set <deployment-url> yordamchi.vercel.app
+git push        # -> tests -> build -> deploy -> alias -> verify
 ```
 
-Connecting the GitHub repo in the Vercel dashboard (Settings → Git) makes every
-push to `main` deploy automatically, removing the manual step above.
+The workflow authenticates with the `VERCEL_TOKEN` repository secret. (Vercel's
+GitHub App is *not* connected — its OAuth consent can't be automated, so the
+token is what makes this hands-off.) To deploy by hand in an emergency:
+
+```bash
+npm run build && npx vercel --prod
+npx vercel alias set <deployment-url> yordamchi.vercel.app
+```
 
 ## Permanent values — do not change
 
