@@ -12,8 +12,8 @@
       rel="stylesheet"
     />
     <script>
-      // Applied before first paint so the theme never flashes (plan.md §2.3).
-      // Mirrors the value store.ts writes to `kotib.theme`.
+      // Applied before first paint so neither the theme nor the skin flashes
+      // (plan.md §2.3). Mirrors what store.ts writes to kotib.theme/kotib.skin.
       (function () {
         try {
           var saved = localStorage.getItem('kotib.theme') || 'light';
@@ -22,8 +22,10 @@
             (saved === 'auto' &&
               window.matchMedia('(prefers-color-scheme: dark)').matches);
           if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+          var skin = localStorage.getItem('kotib.skin') || 'klassik';
+          document.documentElement.setAttribute('data-skin', skin);
         } catch (e) {
-          /* localStorage unavailable — fall through to the light default. */
+          /* localStorage unavailable — fall through to the light defaults. */
         }
       })();
     </script>

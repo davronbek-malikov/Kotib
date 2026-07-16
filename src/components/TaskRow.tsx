@@ -5,32 +5,52 @@ import type { Task } from '../lib/types';
 
 /** Drag distance that commits the action (plan.md §3.1). */
 const THRESHOLD = 72;
+/** Movement before we treat a pointer down as a drag rather than a tap. */
+const SLOP = 8;
 
 interface Props {
   task: Task;
+  /** Registon reads a day by colour, so it shows the category stripe. */
+  showCategory?: boolean;
   onToggle: () => void;
   onDelete: () => void;
 }
 
-export function TaskRow({ task, onToggle, onDelete }: Props) {
+export function TaskRow({ task, showCategory = false, onToggle, onDelete }: Props) {
   const [dx, setDx] = useState(0);
   const startX = useRef(0);
+  const pressed = useRef(false);
   const dragging = useRef(false);
 
   function down(e: React.PointerEvent) {
-    dragging.current = true;
+    // Never hijack a press that starts on a control — capturing the pointer
+    // steals the click and the button would stop working (this is what broke
+    // completing a task with a mouse).
+    if ((e.target as HTMLElement).closest('button')) return;
+    pressed.current = true;
     startX.current = e.clientX;
-    (e.currentTarget as Element).setPointerCapture(e.pointerId);
   }
 
   function move(e: React.PointerEvent) {
-    if (!dragging.current) return;
-    setDx(e.clientX - startX.current);
+    if (!pressed.current) return;
+    const delta = e.clientX - startX.current;
+
+    // Only claim the pointer once this is unambiguously a horizontal drag, so
+    // taps and vertical scrolls are left alone.
+    if (!dragging.current) {
+      if (Math.abs(delta) < SLOP) return;
+      dragging.current = true;
+      // Not implemented in every environment (jsdom, older WebViews).
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+    }
+    setDx(delta);
   }
 
   function up() {
-    if (!dragging.current) return;
+    const wasDragging = dragging.current;
+    pressed.current = false;
     dragging.current = false;
+    if (!wasDragging) return;
     // Swipe right = done, swipe left = delete.
     if (dx > THRESHOLD) onToggle();
     else if (dx < -THRESHOLD) onDelete();
@@ -53,8 +73,16 @@ export function TaskRow({ task, onToggle, onDelete }: Props) {
           aria-label={t('today.done')}
           aria-pressed={task.done}
         >
-          {task.done && <Icon name="check" size={16} />}
+          <Icon name="check" size={16} />
         </button>
+
+        {showCategory && (
+          <span
+            className="taskrow__cat"
+            style={{ background: `var(--cat-${task.category})` }}
+            aria-hidden="true"
+          />
+        )}
 
         <div className="taskrow__body">
           <span className="taskrow__title">{task.title}</span>

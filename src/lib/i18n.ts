@@ -48,6 +48,12 @@ const STRINGS: Record<string, Entry> = {
   'add.save':        { uz: 'Saqlash',       tr: 'Kaydet',           en: 'Save' },
   'add.cancel':      { uz: 'Bekor qilish',  tr: 'İptal',            en: 'Cancel' },
 
+  /* --- Priorities (advanced task mode) --- */
+  'pri.shoshilinch': { uz: 'Shoshilinch',          tr: 'Acil',              en: 'Urgent' },
+  'pri.muhim':       { uz: 'Muhim',                tr: 'Önemli',            en: 'Must do' },
+  'pri.rivojlanish': { uz: 'Shaxsiy rivojlanish',  tr: 'Kişisel gelişim',   en: 'Growth' },
+  'pri.kam':         { uz: 'Kam muhim',            tr: 'Daha az önemli',    en: 'Less important' },
+
   /* --- Categories (plan.md §3.7) --- */
   'cat.ish':     { uz: 'Ish',     tr: 'İş',      en: 'Work' },
   'cat.shaxsiy': { uz: 'Shaxsiy', tr: 'Kişisel', en: 'Personal' },
@@ -94,6 +100,29 @@ const STRINGS: Record<string, Entry> = {
   'set.theme.dark':    { uz: "Qorong'i",        tr: 'Koyu',          en: 'Dark' },
   'set.theme.auto':    { uz: 'Avto',            tr: 'Otomatik',      en: 'Auto' },
   'set.language':      { uz: 'Til',             tr: 'Dil',           en: 'Language' },
+
+  /* --- Skin --- */
+  'set.skin':          { uz: 'Uslub',           tr: 'Tema',          en: 'Style' },
+  'set.skin.klassik':  { uz: 'Klassik',         tr: 'Klasik',        en: 'Classic' },
+  'set.skin.registon': { uz: 'Registon',        tr: 'Registon',      en: 'Registon' },
+  'set.skin.hint': {
+    uz: "Registon — Registon koshinlari ranglari. Har bir toifa o'z rangiga ega.",
+    tr: 'Registon — Registan çini renkleri. Her kategorinin kendi rengi var.',
+    en: 'Registon uses Registan tile colours. Every category gets its own.',
+  },
+
+  /* --- Task mode --- */
+  'set.taskMode':          { uz: 'Vazifa rejimi', tr: 'Görev modu',  en: 'Task mode' },
+  'set.taskMode.simple':   { uz: 'Oddiy',         tr: 'Basit',       en: 'Simple' },
+  'set.taskMode.advanced': { uz: 'Kengaytirilgan', tr: 'Gelişmiş',   en: 'Advanced' },
+  'set.taskMode.hint': {
+    uz: "Oddiy — hamma vazifa bitta ro'yxatda. Kengaytirilgan — muhimligi bo'yicha ajratiladi.",
+    tr: 'Basit — tek liste. Gelişmiş — önceliğe göre ayrılır.',
+    en: 'Simple keeps one list. Advanced splits the day by priority.',
+  },
+
+  /* --- Progress --- */
+  'today.progress': { uz: 'bajarildi', tr: 'tamamlandı', en: 'done' },
   'set.notifications': { uz: 'Eslatmalar',      tr: 'Hatırlatmalar', en: 'Reminders' },
   'set.notif.enabled': { uz: 'Yoqilgan',        tr: 'Açık',          en: 'Enabled' },
   'set.notif.sound':   { uz: 'Signal',          tr: 'Ses',           en: 'Sound' },

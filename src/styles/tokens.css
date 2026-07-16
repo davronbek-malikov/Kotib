@@ -28,6 +28,24 @@
 
   /* Thumb-first: min touch target (plan.md §2.1) */
   --touch-min: 44px;
+
+  /* Icon weight — Registon draws heavier, filled marks. */
+  --icon-stroke: 1.6;
+
+  /*
+   * Category and priority colours. Klassik stays deliberately monochrome:
+   * its philosophy is one accent and quiet neutrals (plan.md §2.1), so
+   * colour never competes with the Today card.
+   */
+  --cat-ish:     var(--text-muted);
+  --cat-shaxsiy: var(--text-muted);
+  --cat-oila:    var(--text-muted);
+  --cat-boshqa:  var(--text-muted);
+
+  --pri-shoshilinch: var(--danger);
+  --pri-muhim:       var(--accent);
+  --pri-rivojlanish: var(--text-muted);
+  --pri-kam:         var(--text-muted);
 }
 
 :root[data-theme='dark'] {
@@ -40,6 +58,61 @@
   --accent-soft: #173A30;
   --danger:      #E5766D;
   --warning:     #E0B34E;
+}
+
+/* ==========================================================================
+   Registon — the second skin.
+
+   Palette comes from Uzbek tilework rather than from a UI trend: Registan
+   cobalt, dome turquoise, anor (pomegranate) and saffron on tile-white.
+   The point is not that it is brighter; it is that colour carries meaning
+   here. Every category and priority owns one, so a day can be read at a
+   glance instead of word by word.
+   ========================================================================== */
+:root[data-skin='registon'] {
+  --bg:          #FFFFFF;
+  --surface:     #F1F5F8;
+  --border:      #E2EAF0;
+  --text:        #14202B;
+  --text-muted:  #62798C;
+  --accent:      #1668A8;
+  --accent-soft: #E4EFF8;
+  --danger:      #C0392F;
+  --warning:     #D2952A;
+
+  --icon-stroke: 2;
+
+  --cat-ish:     #1668A8;
+  --cat-shaxsiy: #1FA3A0;
+  --cat-oila:    #C0392F;
+  --cat-boshqa:  #D2952A;
+
+  --pri-shoshilinch: #C0392F;
+  --pri-muhim:       #1668A8;
+  --pri-rivojlanish: #1FA3A0;
+  --pri-kam:         #8199AB;
+}
+
+:root[data-skin='registon'][data-theme='dark'] {
+  --bg:          #0C1620;
+  --surface:     #14222E;
+  --border:      #223546;
+  --text:        #EAF2F8;
+  --text-muted:  #8FA6B8;
+  --accent:      #4BA3E3;
+  --accent-soft: #12324A;
+  --danger:      #E8776C;
+  --warning:     #E8BC5E;
+
+  --cat-ish:     #4BA3E3;
+  --cat-shaxsiy: #3FCFC9;
+  --cat-oila:    #E8776C;
+  --cat-boshqa:  #E8BC5E;
+
+  --pri-shoshilinch: #E8776C;
+  --pri-muhim:       #4BA3E3;
+  --pri-rivojlanish: #3FCFC9;
+  --pri-kam:         #7A93A6;
 }
 
 /* plan.md §2.1: nothing moves unless the user acts. */

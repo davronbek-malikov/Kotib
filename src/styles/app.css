@@ -59,14 +59,39 @@ button, a, input, select { min-height: var(--touch-min); }
 
 /* --- Today card: the hero moment (plan.md §2.1) --- */
 .todaycard {
+  background: var(--accent-soft);
+  border-radius: var(--radius-card);
+  margin-bottom: var(--space-4);
+  overflow: hidden;
+}
+
+.todaycard__main {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
   padding: var(--space-4);
-  background: var(--accent-soft);
-  border-radius: var(--radius-card);
-  margin-bottom: var(--space-4);
+}
+
+/* The day's progress, flush along the card's bottom edge. One bar, no label —
+   the ring already carries the number. */
+.todaycard__meter {
+  height: 3px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.todaycard__meter-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 400ms ease;
+}
+
+.ring__pct {
+  fill: var(--accent);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .todaycard__date {
@@ -138,18 +163,53 @@ button, a, input, select { min-height: var(--touch-min); }
   border: 1.5px solid var(--border);
   border-radius: 50%;
   background: none;
-  color: #fff;
+  /* The tick is always rendered; colour is what reveals it, so the mark can
+     animate in rather than pop into existence. */
+  color: transparent;
   cursor: pointer;
-  transition: background 200ms ease, border-color 200ms ease;
+  transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
 }
+
+.taskrow__check:hover { border-color: var(--accent); }
 
 .taskrow.is-done .taskrow__check {
   background: var(--accent);
   border-color: var(--accent);
+  color: #fff;
+}
+
+/* Category stripe — Registon only; how a day becomes readable at a glance. */
+.taskrow__cat {
+  flex: 0 0 auto;
+  width: 3px;
+  align-self: stretch;
+  border-radius: var(--radius-pill);
+  opacity: 0.9;
 }
 
 .taskrow__body { flex: 1 1 auto; display: flex; align-items: center; gap: var(--space-2); }
-.taskrow.is-done .taskrow__title { color: var(--text-muted); text-decoration: line-through; }
+
+/* A completed task should read as finished at a glance, not on inspection. */
+.taskrow.is-done { opacity: 0.55; }
+.taskrow.is-done .taskrow__cat { opacity: 0.3; }
+
+.taskrow__title {
+  /* Animate the rule across the words instead of toggling it on. */
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 60%;
+  background-size: 0% 1.5px;
+  transition: background-size 220ms ease, color 220ms ease;
+}
+
+.taskrow.is-done .taskrow__title {
+  color: var(--text-muted);
+  background-size: 100% 1.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .taskrow__title { transition: none; }
+}
 
 .taskrow__badge {
   font-size: 11px;
@@ -268,7 +328,72 @@ button, a, input, select { min-height: var(--touch-min); }
   cursor: pointer;
 }
 
-.chip.is-on { background: var(--accent); border-color: var(--accent); color: #fff; }
+/* A selected chip takes its own tone where one is given (category, priority),
+   so picking is a colour decision, not just a highlight. */
+.chip.is-on {
+  background: var(--chip-tone, var(--accent));
+  border-color: var(--chip-tone, var(--accent));
+  color: #fff;
+}
+
+/* --- Priority groups (advanced task mode) --- */
+.pri { margin-bottom: var(--space-2); }
+
+.pri__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--pri-tone, var(--text-muted));
+}
+
+.pri__label--shoshilinch { --pri-tone: var(--pri-shoshilinch); }
+.pri__label--muhim       { --pri-tone: var(--pri-muhim); }
+.pri__label--rivojlanish { --pri-tone: var(--pri-rivojlanish); }
+.pri__label--kam         { --pri-tone: var(--pri-kam); }
+
+.pri__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pri__count {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+
+.hint {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--text-muted);
+}
+
+/* --- Broadcast announcement --- */
+.announce {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--accent);
+  color: #fff;
+}
+
+.announce__text { display: flex; flex-direction: column; gap: 2px; }
+.announce__text strong { font-size: var(--fs-body); }
+.announce__text span { font-size: var(--fs-caption); line-height: var(--lh-caption); opacity: 0.92; }
+
+.announce__close {
+  margin-left: auto;
+  min-height: 32px;
+  background: none;
+  border: 0;
+  color: #fff;
+  opacity: 0.85;
+  cursor: pointer;
+}
 
 .btn {
   flex: 1;

@@ -86,4 +86,55 @@ describe('App smoke', () => {
 
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
   });
+
+  it('completes a task when the check is clicked, and strikes it through', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<App />);
+
+    await user.click(screen.getByLabelText('Yangi vazifa'));
+    await user.type(screen.getByPlaceholderText('Nima qilasiz?'), 'Koding');
+    await user.click(screen.getByRole('button', { name: 'Saqlash' }));
+
+    // This is the bug from the report: with a mouse, the click was being
+    // swallowed by the swipe handler's pointer capture.
+    await user.click(screen.getByLabelText('Bajarildi'));
+    expect(container.querySelector('.taskrow')?.className).toContain('is-done');
+  });
+
+  it('switches to the Registon skin', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('Sozlamalar'));
+    await user.click(screen.getByRole('button', { name: 'Registon' }));
+
+    expect(document.documentElement.getAttribute('data-skin')).toBe('registon');
+  });
+
+  it('groups the day by priority in advanced mode', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('Sozlamalar'));
+    await user.click(screen.getByRole('button', { name: 'Kengaytirilgan' }));
+    await user.click(screen.getByText('Bugun'));
+
+    await user.click(screen.getByLabelText('Yangi vazifa'));
+    await user.type(screen.getByPlaceholderText('Nima qilasiz?'), 'Deploy');
+    await user.click(screen.getByRole('button', { name: 'Shoshilinch' }));
+    await user.click(screen.getByRole('button', { name: 'Saqlash' }));
+
+    // The bucket heading appears; the timed/untimed split does not.
+    expect(screen.getByText('Shoshilinch')).toBeTruthy();
+    expect(screen.queryByText('Vaqtsiz')).toBeNull();
+  });
+
+  it('shows the broadcast announcement once, then not again', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    expect(screen.getByText(/Kotib yangilandi/)).toBeTruthy();
+    await user.click(screen.getByLabelText('Yopish'));
+    expect(screen.queryByText(/Kotib yangilandi/)).toBeNull();
+  });
 });

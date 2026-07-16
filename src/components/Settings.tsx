@@ -3,11 +3,15 @@ import { APP_NAME } from '../lib/branding';
 import { t } from '../lib/i18n';
 import {
   createInitialState, exportJSON, importJSON, setLanguage,
-  setNotifications, setTheme, setWeekStart,
+  setNotifications, setSkin, setTaskMode, setTheme, setWeekStart,
 } from '../lib/store';
-import type { AppState, Language, ThemeMode, WeekStart } from '../lib/types';
+import type {
+  AppState, Language, Skin, TaskMode, ThemeMode, WeekStart,
+} from '../lib/types';
 
 const THEMES: ThemeMode[] = ['light', 'dark', 'auto'];
+const SKINS: Skin[] = ['klassik', 'registon'];
+const TASK_MODES: TaskMode[] = ['simple', 'advanced'];
 const WEEK_STARTS: WeekStart[] = ['mon', 'sun'];
 /** Uzbek Latin first — it is the default (plan.md §3.5). */
 const LANGS: { id: Language; label: string }[] = [
@@ -64,6 +68,34 @@ export function Settings({ state, setState }: Props) {
           </button>
         ))}
       </div>
+
+      <h2 className="section-label">{t('set.skin')}</h2>
+      <div className="chips">
+        {SKINS.map((skin) => (
+          <button
+            key={skin}
+            className={`chip${state.settings.skin === skin ? ' is-on' : ''}`}
+            onClick={() => setState(setSkin(state, skin))}
+          >
+            {t(`set.skin.${skin}`)}
+          </button>
+        ))}
+      </div>
+      <p className="hint">{t('set.skin.hint')}</p>
+
+      <h2 className="section-label">{t('set.taskMode')}</h2>
+      <div className="chips">
+        {TASK_MODES.map((mode) => (
+          <button
+            key={mode}
+            className={`chip${state.settings.taskMode === mode ? ' is-on' : ''}`}
+            onClick={() => setState(setTaskMode(state, mode))}
+          >
+            {t(`set.taskMode.${mode}`)}
+          </button>
+        ))}
+      </div>
+      <p className="hint">{t('set.taskMode.hint')}</p>
 
       <h2 className="section-label">{t('set.language')}</h2>
       <div className="chips">

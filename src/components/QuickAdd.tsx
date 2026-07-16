@@ -2,23 +2,27 @@ import { useState } from 'react';
 import { requestNotificationPermission } from '../lib/bridge';
 import { t } from '../lib/i18n';
 import type { NewTask } from '../lib/store';
-import type { Category, ReminderOffset } from '../lib/types';
+import type { Category, Priority, ReminderOffset } from '../lib/types';
+import { PRIORITIES } from '../lib/types';
 
 const CATEGORIES: Category[] = ['ish', 'shaxsiy', 'oila', 'boshqa'];
 const OFFSETS: (ReminderOffset | 'none')[] = ['none', 0, 5, 30, 60, 1440];
 
 interface Props {
   date: string;
+  /** Advanced task mode adds the priority picker. */
+  advanced?: boolean;
   onSave: (task: NewTask) => void;
   onClose: () => void;
 }
 
 /** Bottom sheet: two taps to save (plan.md §3.1). */
-export function QuickAdd({ date, onSave, onClose }: Props) {
+export function QuickAdd({ date, advanced = false, onSave, onClose }: Props) {
   const [title, setTitle] = useState('');
   const [time, setTime] = useState('');
   const [when, setWhen] = useState(date);
   const [category, setCategory] = useState<Category>('shaxsiy');
+  const [priority, setPriority] = useState<Priority>('muhim');
   const [offset, setOffset] = useState<ReminderOffset | 'none'>('none');
 
   function submit(e: React.FormEvent) {
@@ -29,6 +33,7 @@ export function QuickAdd({ date, onSave, onClose }: Props) {
       date: when,
       time: time || undefined,
       category,
+      priority,
       // A reminder needs a time to fire from (see notifications.fireTimeFor).
       reminderOffsetMin: time && offset !== 'none' ? offset : undefined,
     });
@@ -75,12 +80,28 @@ export function QuickAdd({ date, onSave, onClose }: Props) {
             <button
               key={c} type="button"
               className={`chip${category === c ? ' is-on' : ''}`}
+              style={{ '--chip-tone': `var(--cat-${c})` } as React.CSSProperties}
               onClick={() => setCategory(c)}
             >
               {t(`cat.${c}`)}
             </button>
           ))}
         </div>
+
+        {advanced && (
+          <div className="chips">
+            {PRIORITIES.map((p) => (
+              <button
+                key={p} type="button"
+                className={`chip${priority === p ? ' is-on' : ''}`}
+                style={{ '--chip-tone': `var(--pri-${p})` } as React.CSSProperties}
+                onClick={() => setPriority(p)}
+              >
+                {t(`pri.${p}`)}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Reminders need a time, so only offer them once one is set. */}
         {time && (

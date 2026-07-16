@@ -5,24 +5,27 @@ import { Checklists } from './components/Checklists';
 import { Settings } from './components/Settings';
 import { TabBar, type Tab } from './components/TabBar';
 import { Today } from './components/Today';
+import { announcementText, pendingAnnouncement } from './lib/announcement';
 import { APK_URL, nativeUpdateNeeded } from './lib/appVersion';
 import { createBridge, isNative } from './lib/bridge';
 import { playChime } from './lib/chime';
 import { todayISO } from './lib/dates';
 import { setLang, t } from './lib/i18n';
+import { setIconSkin } from './icons/Icon';
 import { mirrorToNative, restoreFromNative, shouldRestore } from './lib/nativeStore';
 import { syncReminders, type ScheduledReminder } from './lib/notifications';
 import { speak } from './lib/speech';
-import { loadState, rollOverdue, saveState } from './lib/store';
+import { loadState, markAnnouncementSeen, rollOverdue, saveState } from './lib/store';
 import type { AppState } from './lib/types';
 
 function applyTheme(state: AppState): void {
-  const { theme } = state.settings;
+  const { theme, skin } = state.settings;
   const dark =
     theme === 'dark' ||
     (theme === 'auto' &&
       window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-skin', skin);
 }
 
 export default function App() {
@@ -37,7 +40,10 @@ export default function App() {
 
   // i18n reads a module-level active locale (Hamyon's pattern), so keep it in
   // sync before children render.
+  // i18n and the icon set both read a module-level active value (Hamyon's
+  // pattern), so keep them in sync before children render.
   setLang(state.settings.lang);
+  setIconSkin(state.settings.skin);
 
   // Kept in a ref so the bridge identity never changes across renders.
   const settingsRef = useRef(state.settings);
@@ -96,6 +102,17 @@ export default function App() {
     void nativeUpdateNeeded().then(setUpdateNeeded);
   }, []);
 
+  /**
+   * Broadcast delivery. There is no push service, so an announcement shipped
+   * in the web build is how a message reaches every user: they load the live
+   * build on open, see it once, and the id is recorded so it never repeats.
+   */
+  const announcement = pendingAnnouncement(state);
+  useEffect(() => {
+    if (!announcement) return;
+    if (state.settings.notifications.sound) playChime();
+  }, [announcement?.id]);
+
   const screen = useMemo(() => {
     switch (tab) {
       case 'today':    return <Today state={state} setState={setState} />;
@@ -111,6 +128,22 @@ export default function App() {
         <a className="updatebar" href={APK_URL} target="_blank" rel="noreferrer">
           {t('update.needed')} — {t('update.action')}
         </a>
+      )}
+
+      {announcement && (
+        <div className="announce" role="status">
+          <div className="announce__text">
+            <strong>{announcementText(announcement).title}</strong>
+            <span>{announcementText(announcement).body}</span>
+          </div>
+          <button
+            className="announce__close"
+            onClick={() => setState(markAnnouncementSeen(state, announcement.id))}
+            aria-label={t('common.close')}
+          >
+            ✕
+          </button>
+        </div>
       )}
 
       {banner && (

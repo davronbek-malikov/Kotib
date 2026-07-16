@@ -5,15 +5,20 @@ import type {
   Checklist,
   Language,
   NotificationSettings,
+  Priority,
   ReminderOffset,
+  Skin,
   Task,
+  TaskMode,
   ThemeMode,
   WeekStart,
 } from './types';
+import { PRIORITIES } from './types';
 
 const STORAGE_KEY = 'kotib-state-v1';
 /** Read by the pre-paint script in index.html before React mounts. */
 const THEME_KEY = 'kotib.theme';
+const SKIN_KEY = 'kotib.skin';
 const LANG_KEY = 'kotib.lang';
 
 export function createInitialState(): AppState {
@@ -21,6 +26,8 @@ export function createInitialState(): AppState {
     schemaVersion: 1,
     settings: {
       theme: 'light',
+      skin: 'klassik',
+      taskMode: 'simple',
       lang: 'uz',
       weekStart: 'mon',
       notifications: {
@@ -85,6 +92,7 @@ export function saveState(s: AppState): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
     // The pre-paint script can't parse the whole blob, so mirror what it needs.
     localStorage.setItem(THEME_KEY, s.settings.theme);
+    localStorage.setItem(SKIN_KEY, s.settings.skin);
     localStorage.setItem(LANG_KEY, s.settings.lang);
   } catch {
     /* Quota or private mode — the in-memory state still works this session. */
@@ -112,6 +120,7 @@ export interface NewTask {
   date: string;
   time?: string;
   category: Category;
+  priority?: Priority;
   reminderOffsetMin?: ReminderOffset;
   checklistId?: string;
 }
@@ -123,6 +132,9 @@ export function buildTask(t: NewTask): Task {
     date: t.date,
     time: t.time,
     category: t.category,
+    // Tasks written in simple mode still need a bucket if the user later
+    // switches to advanced — 'muhim' is the neutral default.
+    priority: t.priority ?? 'muhim',
     done: false,
     reminderOffsetMin: t.reminderOffsetMin,
     checklistId: t.checklistId,
@@ -157,6 +169,7 @@ export interface TaskPatch {
   date?: string;
   time?: string;
   category?: Category;
+  priority?: Priority;
   reminderOffsetMin?: ReminderOffset;
   checklistId?: string;
 }
@@ -194,6 +207,23 @@ export function rollOverdue(s: AppState, todayISO: string): AppState {
         : t,
     ),
   };
+}
+
+/**
+ * A day split into priority buckets, most urgent first — the shape 'advanced'
+ * task mode renders. Empty buckets are dropped so the screen never shows a
+ * heading with nothing under it.
+ */
+export function tasksByPriority(
+  s: AppState,
+  dateISO: string,
+): { priority: Priority; tasks: Task[] }[] {
+  const day = tasksForDate(s, dateISO);
+  return PRIORITIES.map((priority) => ({
+    priority,
+    // Tasks predating advanced mode have no priority; treat them as 'muhim'.
+    tasks: day.filter((t) => (t.priority ?? 'muhim') === priority),
+  })).filter((group) => group.tasks.length > 0);
 }
 
 /* --- Checklists --- */
@@ -291,6 +321,25 @@ export function resetChecklist(s: AppState, listId: string): AppState {
 
 export function setTheme(s: AppState, theme: ThemeMode): AppState {
   return { ...s, settings: { ...s.settings, theme } };
+}
+
+export function setSkin(s: AppState, skin: Skin): AppState {
+  return { ...s, settings: { ...s.settings, skin } };
+}
+
+export function setTaskMode(s: AppState, taskMode: TaskMode): AppState {
+  return { ...s, settings: { ...s.settings, taskMode } };
+}
+
+export function setPriority(s: AppState, id: string, priority: Priority): AppState {
+  return {
+    ...s,
+    tasks: s.tasks.map((t) => (t.id === id ? { ...t, priority } : t)),
+  };
+}
+
+export function markAnnouncementSeen(s: AppState, id: string): AppState {
+  return { ...s, settings: { ...s.settings, seenAnnouncement: id } };
 }
 
 export function setLanguage(s: AppState, lang: Language): AppState {
