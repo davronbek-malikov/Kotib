@@ -7,8 +7,10 @@
     <title>Kotib — Aqlli shaxsiy kotib</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Caveat carries Latin Extended and Cyrillic, so Uzbek o'/g' and the
+         Cyrillic locale both render in the handwriting font. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <script>
@@ -24,6 +26,8 @@
           if (dark) document.documentElement.setAttribute('data-theme', 'dark');
           var skin = localStorage.getItem('kotib.skin') || 'klassik';
           document.documentElement.setAttribute('data-skin', skin);
+          var font = localStorage.getItem('kotib.font') || 'manrope';
+          document.documentElement.setAttribute('data-font', font);
         } catch (e) {
           /* localStorage unavailable — fall through to the light defaults. */
         }

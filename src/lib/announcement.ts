@@ -24,16 +24,16 @@ export interface Announcement {
 }
 
 export const ANNOUNCEMENT: Announcement | null = {
-  id: '2026-07-16-phase1-update',
+  id: '2026-07-16-phase2-ai',
   title: {
-    uz: 'Kotib yangilandi ✨',
-    tr: 'Kotib güncellendi ✨',
-    en: 'Kotib just updated ✨',
+    uz: 'AI yordamchi keldi 🤖',
+    tr: 'AI asistan geldi 🤖',
+    en: 'The AI assistant is here 🤖',
   },
   body: {
-    uz: "Yangi: Registon ko'rinishi, Kengaytirilgan rejim va kun foizi. Ilovani qayta o'rnatish shart emas — o'zi yangilandi.",
-    tr: 'Yeni: Registon teması, Gelişmiş mod ve günlük yüzde. Yeniden yüklemeye gerek yok — kendisi güncellendi.',
-    en: 'New: Registon theme, Advanced mode, and daily progress. No reinstall needed — it updated itself.',
+    uz: "Pastdagi «AI yordamchi» — rejalaringizni biladi, savollarga javob beradi. Yana: marker uslubi, qo'lyozma shrifti, yangi dizayn. Qayta o'rnatish shart emas — ilova o'zi yangilandi.",
+    tr: 'Alttaki «AI asistan» planlarınızı biliyor ve sorularınızı yanıtlıyor. Ayrıca: fosforlu kalem, el yazısı, yeni tasarım. Yeniden yükleme yok — uygulama kendini güncelledi.',
+    en: 'The new AI assistant knows your plans and answers questions. Plus: highlighter style, handwriting font, new design. No reinstall — the app updated itself.',
   },
 };
 

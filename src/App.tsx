@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { App as CapApp } from '@capacitor/app';
 import { Calendar } from './components/Calendar';
+import { Chat } from './components/Chat';
 import { Checklists } from './components/Checklists';
 import { Settings } from './components/Settings';
 import { TabBar, type Tab } from './components/TabBar';
 import { Today } from './components/Today';
+import { Icon } from './icons/Icon';
 import { announcementText, pendingAnnouncement } from './lib/announcement';
 import { APK_URL, nativeUpdateNeeded } from './lib/appVersion';
 import { createBridge, isNative } from './lib/bridge';
@@ -19,13 +21,16 @@ import { loadState, markAnnouncementSeen, rollOverdue, saveState } from './lib/s
 import type { AppState } from './lib/types';
 
 function applyTheme(state: AppState): void {
-  const { theme, skin } = state.settings;
+  const { theme, skin, font, doneStyle } = state.settings;
   const dark =
     theme === 'dark' ||
     (theme === 'auto' &&
       window.matchMedia('(prefers-color-scheme: dark)').matches);
-  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-skin', skin);
+  const root = document.documentElement;
+  root.setAttribute('data-theme', dark ? 'dark' : 'light');
+  root.setAttribute('data-skin', skin);
+  root.setAttribute('data-font', font);
+  root.setAttribute('data-done', doneStyle);
 }
 
 export default function App() {
@@ -118,6 +123,7 @@ export default function App() {
       case 'today':    return <Today state={state} setState={setState} />;
       case 'calendar': return <Calendar state={state} setState={setState} />;
       case 'lists':    return <Checklists state={state} setState={setState} />;
+      case 'chat':     return <Chat state={state} />;
       case 'settings': return <Settings state={state} setState={setState} />;
     }
   }, [tab, state]);
@@ -152,6 +158,19 @@ export default function App() {
           <span>{banner.body}</span>
         </button>
       )}
+
+      {/* Settings left the tab bar for the assistant, so it lives up here —
+          the same gear Hamyon uses. */}
+      <header className="topbar">
+        <button
+          className={`gear${tab === 'settings' ? ' is-on' : ''}`}
+          onClick={() => setTab(tab === 'settings' ? 'today' : 'settings')}
+          aria-label={t('nav.settings')}
+          aria-pressed={tab === 'settings'}
+        >
+          <Icon name="settings" size={20} />
+        </button>
+      </header>
 
       {screen}
       <TabBar active={tab} onChange={setTab} />

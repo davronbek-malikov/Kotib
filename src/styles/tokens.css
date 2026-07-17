@@ -17,6 +17,11 @@
   --fs-body:    17px; --lh-body:    24px;
   --fs-caption: 13px; --lh-caption: 18px;
 
+  /* Elevation. Hamyon's cards sit on the canvas with soft depth rather than
+     hard borders; Kotib borrows that once the UI got busy enough to need it. */
+  --shadow-card: 0 1px 2px rgba(23, 33, 28, 0.03), 0 6px 24px rgba(23, 33, 28, 0.05);
+  --shadow-nav:  0 8px 32px rgba(23, 33, 28, 0.14);
+
   /* --- Radius (plan.md §2.2) --- */
   --radius-card:  16px;
   --radius-input: 12px;
@@ -58,6 +63,18 @@
   --accent-soft: #173A30;
   --danger:      #E5766D;
   --warning:     #E0B34E;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2), 0 6px 24px rgba(0, 0, 0, 0.25);
+  --shadow-nav:  0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Handwriting. Caveat runs small and light for its point size, so the ramp is
+   scaled up rather than swapped one-for-one. */
+:root[data-font='qolyozma'] {
+  --font-family: "Caveat", "Segoe Script", cursive;
+  --fs-display: 36px; --lh-display: 38px; --fw-display: 700;
+  --fs-body:    22px; --lh-body:    28px;
+  --fs-caption: 16px; --lh-caption: 20px;
 }
 
 /* ==========================================================================

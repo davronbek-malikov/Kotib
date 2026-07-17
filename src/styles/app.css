@@ -16,7 +16,7 @@ body {
   margin-inline: auto;
   min-height: 100dvh;
   /* Room for the bottom tab bar + iOS home indicator. */
-  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
 }
 
 button { font-family: inherit; }
@@ -24,48 +24,110 @@ button { font-family: inherit; }
 /* Thumb-first: every interactive target clears 44px (plan.md §2.1). */
 button, a, input, select { min-height: var(--touch-min); }
 
-/* --- Tab bar (plan.md §3.6): thumb-first, fixed to the bottom. --- */
+/*
+ * Tab bar: a floating pill rather than a full-width strip, following Hamyon.
+ * The active tab is a filled lozenge, so the current place is unmistakable at
+ * arm's length.
+ */
 .tabbar {
   position: fixed;
-  bottom: 0;
+  bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
-  width: 100%;
-  max-width: 520px;
+  width: calc(100% - var(--space-6));
+  max-width: 460px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-1);
+  padding: var(--space-2);
   background: var(--bg);
-  border-top: 1px solid var(--border);
-  padding-bottom: env(safe-area-inset-bottom);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-nav);
+  z-index: 8;
 }
 
 .tabbar__item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-2) 0;
+  gap: 2px;
+  min-height: 0;
+  padding: var(--space-2) var(--space-1);
   background: none;
   border: 0;
+  border-radius: var(--radius-pill);
   color: var(--text-muted);
-  font-size: var(--fs-caption);
-  line-height: var(--lh-caption);
+  font-size: 11px;
+  line-height: 14px;
   cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
 }
 
-.tabbar__item.is-active { color: var(--accent); }
+.tabbar__icon { display: grid; place-items: center; }
+
+.tabbar__item.is-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.tabbar__label { white-space: nowrap; }
 
 .screen { padding: var(--space-4); }
 
+/* --- Header gear (settings left the tab bar for the assistant) --- */
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-3) var(--space-4) 0;
+}
+
+.gear {
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+
+.gear.is-on { color: var(--accent); border-color: var(--accent); }
+.gear:hover { color: var(--accent); }
+
 /* --- Today card: the hero moment (plan.md §2.1) --- */
 .todaycard {
+  position: relative;
   background: var(--accent-soft);
   border-radius: var(--radius-card);
   margin-bottom: var(--space-4);
   overflow: hidden;
 }
 
+/* A soft wash of the accent, so the hero has depth without a heavy shadow —
+   this is the one card allowed to feel like an object. */
+.todaycard::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 60%;
+  height: 180%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 12%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
 .todaycard__main {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -193,19 +255,54 @@ button, a, input, select { min-height: var(--touch-min); }
 .taskrow.is-done { opacity: 0.55; }
 .taskrow.is-done .taskrow__cat { opacity: 0.3; }
 
+/*
+ * Done styles. All three draw with one background-image so the mark can wipe
+ * across the words rather than snap on; only the paint and its height change.
+ */
 .taskrow__title {
-  /* Animate the rule across the words instead of toggling it on. */
   background-image: linear-gradient(currentColor, currentColor);
   background-repeat: no-repeat;
   background-position: 0 60%;
   background-size: 0% 1.5px;
-  transition: background-size 220ms ease, color 220ms ease;
+  transition: background-size 260ms ease, color 260ms ease;
+  padding: 0 2px;
+  margin: 0 -2px;
 }
 
 .taskrow.is-done .taskrow__title {
   color: var(--text-muted);
   background-size: 100% 1.5px;
 }
+
+/* Marker: a highlighter stroke through the words, the way you'd cross a line
+   off on paper. The row keeps full opacity — the stroke is the signal. */
+:root[data-done='marker'] .taskrow__title {
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--accent) 42%, transparent),
+    color-mix(in srgb, var(--accent) 42%, transparent)
+  );
+  background-position: 0 55%;
+  background-size: 0% 62%;
+  border-radius: 3px;
+}
+
+:root[data-done='marker'] .taskrow.is-done { opacity: 1; }
+
+:root[data-done='marker'] .taskrow.is-done .taskrow__title {
+  color: var(--text);
+  background-size: 100% 62%;
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--text) 45%, transparent);
+  text-decoration-thickness: 1.5px;
+}
+
+/* Xira: no rule at all — the task simply recedes. */
+:root[data-done='xira'] .taskrow.is-done .taskrow__title { background-size: 0% 1.5px; }
+:root[data-done='xira'] .taskrow.is-done { opacity: 0.4; }
+
+/* The Settings preview row is a sample, not a task: no controls, no border. */
+.donepreview { margin-top: var(--space-3); }
+.donepreview .taskrow { border-bottom: 0; padding: var(--space-2) 0; min-height: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .taskrow__title { transition: none; }
@@ -260,7 +357,7 @@ button, a, input, select { min-height: var(--touch-min); }
 .fab {
   position: fixed;
   right: max(var(--space-4), calc(50vw - 260px + var(--space-4)));
-  bottom: calc(84px + env(safe-area-inset-bottom));
+  bottom: calc(96px + env(safe-area-inset-bottom));
   width: 56px;
   height: 56px;
   display: grid;
@@ -395,6 +492,161 @@ button, a, input, select { min-height: var(--touch-min); }
   cursor: pointer;
 }
 
+/* ==========================================================================
+   AI assistant
+   ========================================================================== */
+.chat {
+  display: flex;
+  flex-direction: column;
+  /* Fill the space between the header and the floating tab bar. */
+  min-height: calc(100dvh - 140px);
+}
+
+.chat__intro {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  text-align: center;
+  padding: var(--space-6) 0;
+}
+
+.chat__avatar {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.chat__title {
+  margin: 0;
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
+  font-weight: var(--fw-display);
+  letter-spacing: -0.4px;
+}
+
+.chat__hint {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+}
+
+.chat__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+  margin-top: var(--space-2);
+}
+
+.chat__log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+}
+
+.bubble {
+  max-width: 84%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-card);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.bubble--user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: #fff;
+  border-bottom-right-radius: var(--space-1);
+}
+
+.bubble--bot {
+  align-self: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: var(--space-1);
+}
+
+.bubble--thinking { display: flex; gap: 4px; padding: var(--space-4); }
+
+.bubble--thinking span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: blink 1.2s infinite ease-in-out;
+}
+
+.bubble--thinking span:nth-child(2) { animation-delay: 0.15s; }
+.bubble--thinking span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.25; }
+  40%           { opacity: 1; }
+}
+
+.chat__composer {
+  position: sticky;
+  bottom: calc(96px + env(safe-area-inset-bottom));
+  display: flex;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  background: var(--bg);
+}
+
+.chat__send { flex: 0 0 auto; width: 52px; display: grid; place-items: center; }
+
+/* ==========================================================================
+   Support
+   ========================================================================== */
+.support {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--bg);
+  box-shadow: var(--shadow-card);
+  color: inherit;
+  text-decoration: none;
+  min-height: 0;
+}
+
+.support__mark {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+  font-family: "Caveat", cursive;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.05;
+  text-align: center;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+
+.support__text { display: flex; flex-direction: column; gap: 2px; }
+.support__text strong { font-size: var(--fs-body); }
+.support__text span { font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-muted); }
+
 .btn {
   flex: 1;
   padding: var(--space-3);
@@ -415,7 +667,7 @@ button, a, input, select { min-height: var(--touch-min); }
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(84px + env(safe-area-inset-bottom));
+  bottom: calc(96px + env(safe-area-inset-bottom));
   width: calc(100% - var(--space-8));
   max-width: 460px;
   display: flex;
@@ -451,6 +703,8 @@ button, a, input, select { min-height: var(--touch-min); }
   margin-bottom: var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
+  background: var(--bg);
+  box-shadow: var(--shadow-card);
 }
 
 .card__head { display: flex; align-items: center; justify-content: space-between; }

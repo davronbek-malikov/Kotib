@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
@@ -21,12 +21,15 @@ describe('App smoke', () => {
     expect(screen.getByRole('navigation')).toBeTruthy();
   });
 
-  it('shows the four Uzbek tabs from plan.md §3.6', () => {
+  it('shows the four Uzbek tabs, with the assistant where Settings used to be', () => {
     render(<App />);
     const nav = screen.getByRole('navigation');
-    for (const label of ['Bugun', 'Taqvim', "Ro'yxatlar", 'Sozlamalar']) {
+    for (const label of ['Bugun', 'Taqvim', "Ro'yxatlar", 'AI yordamchi']) {
       expect(within(nav).getByText(label), `missing tab ${label}`).toBeTruthy();
     }
+    // Settings moved out of the tab bar and onto the header gear.
+    expect(within(nav).queryByText('Sozlamalar')).toBeNull();
+    expect(screen.getByLabelText('Sozlamalar')).toBeTruthy();
   });
 
   it('invites the user in rather than showing a void', () => {
@@ -69,7 +72,7 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByText('Sozlamalar'));
+    await user.click(screen.getByLabelText('Sozlamalar'));
     await user.click(screen.getByRole('button', { name: 'English' }));
 
     const nav = screen.getByRole('navigation');
@@ -81,7 +84,7 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByText('Sozlamalar'));
+    await user.click(screen.getByLabelText('Sozlamalar'));
     await user.click(screen.getByRole('button', { name: "Qorong'i" }));
 
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
@@ -105,7 +108,7 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByText('Sozlamalar'));
+    await user.click(screen.getByLabelText('Sozlamalar'));
     await user.click(screen.getByRole('button', { name: 'Registon' }));
 
     expect(document.documentElement.getAttribute('data-skin')).toBe('registon');
@@ -115,7 +118,7 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByText('Sozlamalar'));
+    await user.click(screen.getByLabelText('Sozlamalar'));
     await user.click(screen.getByRole('button', { name: 'Kengaytirilgan' }));
     await user.click(screen.getByText('Bugun'));
 
@@ -133,8 +136,75 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    expect(screen.getByText(/Kotib yangilandi/)).toBeTruthy();
+    expect(screen.getByText(/AI yordamchi keldi/)).toBeTruthy();
     await user.click(screen.getByLabelText('Yopish'));
-    expect(screen.queryByText(/Kotib yangilandi/)).toBeNull();
+    expect(screen.queryByText(/AI yordamchi keldi/)).toBeNull();
+  });
+
+  it('opens the assistant and asks it a real question', async () => {
+    // The proxy is the only thing stubbed — everything else is the real app.
+    const fetchMock = vi.fn(async () =>
+      new Response(JSON.stringify({ answer: 'Bugun 2 ta vazifa bor.' }), { status: 200 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('AI yordamchi'));
+    await user.type(screen.getByPlaceholderText('Savolingizni yozing…'), 'Bugun nima bor?');
+    await user.click(screen.getByLabelText('Yuborish'));
+
+    expect(await screen.findByText('Bugun 2 ta vazifa bor.')).toBeTruthy();
+
+    // The user's tasks and today's date must actually reach the proxy —
+    // otherwise it is a chatbot, not a secretary.
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('/api/ai');
+    const sent = JSON.parse(init.body as string) as { context: { bugun: unknown; ilova: unknown } };
+    expect(sent.context.bugun).toBeTruthy();
+    expect(sent.context.ilova).toBeTruthy();
+    vi.unstubAllGlobals();
+  });
+
+  it('tells the user what to do when the assistant is unreachable', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('offline'); }));
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('AI yordamchi'));
+    await user.type(screen.getByPlaceholderText('Savolingizni yozing…'), 'Salom');
+    await user.click(screen.getByLabelText('Yuborish'));
+
+    expect(await screen.findByText(/Internet yo'q/)).toBeTruthy();
+    vi.unstubAllGlobals();
+  });
+
+  it('switches the completed-task style to marker', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByLabelText('Sozlamalar'));
+    await user.click(screen.getByRole('button', { name: 'Marker' }));
+
+    expect(document.documentElement.getAttribute('data-done')).toBe('marker');
+  });
+
+  it('switches to the handwriting font', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByLabelText('Sozlamalar'));
+    await user.click(screen.getByRole('button', { name: "Qo'lyozma" }));
+
+    expect(document.documentElement.getAttribute('data-font')).toBe('qolyozma');
+  });
+
+  it('offers the Tirikchilik support link', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByLabelText('Sozlamalar'));
+    const link = screen.getByRole('link', { name: /Tirikchilik/ });
+    expect(link.getAttribute('href')).toContain('tirikchilik.uz');
   });
 });

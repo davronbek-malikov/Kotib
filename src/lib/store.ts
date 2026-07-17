@@ -3,6 +3,8 @@ import type {
   AppState,
   Category,
   Checklist,
+  DoneStyle,
+  FontChoice,
   Language,
   NotificationSettings,
   Priority,
@@ -19,6 +21,7 @@ const STORAGE_KEY = 'kotib-state-v1';
 /** Read by the pre-paint script in index.html before React mounts. */
 const THEME_KEY = 'kotib.theme';
 const SKIN_KEY = 'kotib.skin';
+const FONT_KEY = 'kotib.font';
 const LANG_KEY = 'kotib.lang';
 
 export function createInitialState(): AppState {
@@ -28,6 +31,8 @@ export function createInitialState(): AppState {
       theme: 'light',
       skin: 'klassik',
       taskMode: 'simple',
+      doneStyle: 'chiziq',
+      font: 'manrope',
       lang: 'uz',
       weekStart: 'mon',
       notifications: {
@@ -93,6 +98,7 @@ export function saveState(s: AppState): void {
     // The pre-paint script can't parse the whole blob, so mirror what it needs.
     localStorage.setItem(THEME_KEY, s.settings.theme);
     localStorage.setItem(SKIN_KEY, s.settings.skin);
+    localStorage.setItem(FONT_KEY, s.settings.font);
     localStorage.setItem(LANG_KEY, s.settings.lang);
   } catch {
     /* Quota or private mode — the in-memory state still works this session. */
@@ -329,6 +335,14 @@ export function setSkin(s: AppState, skin: Skin): AppState {
 
 export function setTaskMode(s: AppState, taskMode: TaskMode): AppState {
   return { ...s, settings: { ...s.settings, taskMode } };
+}
+
+export function setDoneStyle(s: AppState, doneStyle: DoneStyle): AppState {
+  return { ...s, settings: { ...s.settings, doneStyle } };
+}
+
+export function setFont(s: AppState, font: FontChoice): AppState {
+  return { ...s, settings: { ...s.settings, font } };
 }
 
 export function setPriority(s: AppState, id: string, priority: Priority): AppState {

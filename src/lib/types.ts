@@ -19,6 +19,19 @@ export type TaskMode = 'simple' | 'advanced';
 
 export type Priority = 'shoshilinch' | 'muhim' | 'rivojlanish' | 'kam';
 
+/**
+ * How a completed task reads. 'marker' mimics striking a line through with a
+ * highlighter, which is what people actually do on paper.
+ */
+export type DoneStyle = 'chiziq' | 'marker' | 'xira';
+
+/**
+ * 'qolyozma' is a handwriting face — for tablet and stylus users who want the
+ * page to feel written rather than typed. Manrope stays the default and keeps
+ * Kotib and Hamyon one family (plan.md §2.2).
+ */
+export type FontChoice = 'manrope' | 'qolyozma';
+
 /** Fixed display order, most urgent first. */
 export const PRIORITIES: Priority[] = [
   'shoshilinch', 'muhim', 'rivojlanish', 'kam',
@@ -72,6 +85,8 @@ export interface AppSettings {
   theme: ThemeMode;
   skin: Skin;
   taskMode: TaskMode;
+  doneStyle: DoneStyle;
+  font: FontChoice;
   lang: Language;
   weekStart: WeekStart;
   notifications: NotificationSettings;

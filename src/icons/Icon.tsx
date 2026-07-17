@@ -2,7 +2,8 @@ import type { Skin } from '../lib/types';
 
 export type IconName =
   | 'today' | 'calendar' | 'lists' | 'settings'
-  | 'plus' | 'bell' | 'check' | 'trash' | 'flag';
+  | 'plus' | 'bell' | 'check' | 'trash' | 'flag'
+  | 'chat' | 'send' | 'heart';
 
 /**
  * Active skin, kept module-level like lib/i18n's active locale. App.tsx syncs
@@ -25,6 +26,9 @@ const OUTLINE: Record<IconName, string> = {
   check:    'M20 6 9 17l-5-5',
   trash:    'M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6',
   flag:     'M4 21V4m0 0h11l-1.5 4L15 12H4',
+  chat:     'M21 11.5a8.4 8.4 0 0 1-9 8.4 8.9 8.9 0 0 1-4-.9L3 21l1.9-4.9a8.4 8.4 0 0 1-.9-4 8.4 8.4 0 0 1 8.4-8.4h.6a8.4 8.4 0 0 1 8 8v.8Z',
+  send:     'M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z',
+  heart:    'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.7 1.1-1a5.5 5.5 0 0 0 0-7.9Z',
 };
 
 /**
@@ -42,6 +46,9 @@ const SOLID: Record<IconName, string> = {
   check:    'M9.2 18.4 3 12.2l1.8-1.8 4.4 4.4L19.2 4.6 21 6.4 9.2 18.4Z',
   trash:    'M9 3h6a1 1 0 0 1 1 1v2h5v2H3V6h5V4a1 1 0 0 1 1-1Zm-4 7h14v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V10Zm4 2v7h2v-7H9Zm4 0v7h2v-7h-2Z',
   flag:     'M4 21V3h12l-2 4 2 4H6v10H4Z',
+  chat:     'M12 2.5a9.5 9.5 0 0 0-8.3 14.1L2 22l5.6-1.6A9.5 9.5 0 1 0 12 2.5ZM8 11h2v2H8v-2Zm3 0h2v2h-2v-2Zm3 0h2v2h-2v-2Z',
+  send:     'M2.5 11.4 21 3l-8.4 18.5-2.4-7.7-7.7-2.4Z',
+  heart:    'M12 21.3 3.9 13.2A5.5 5.5 0 0 1 12 5.7a5.5 5.5 0 0 1 8.1 7.5L12 21.3Z',
 };
 
 interface Props {

@@ -23,7 +23,59 @@ const STRINGS: Record<string, Entry> = {
   'nav.today':      { uz: 'Bugun',      tr: 'Bugün',    en: 'Today' },
   'nav.calendar':   { uz: 'Taqvim',     tr: 'Takvim',   en: 'Calendar' },
   'nav.lists':      { uz: "Ro'yxatlar", tr: 'Listeler', en: 'Lists' },
+  'nav.chat':       { uz: 'AI yordamchi', tr: 'AI asistan', en: 'AI assistant' },
   'nav.settings':   { uz: 'Sozlamalar', tr: 'Ayarlar',  en: 'Settings' },
+
+  /* --- AI assistant --- */
+  'chat.title': { uz: 'AI yordamchi', tr: 'AI asistan', en: 'AI assistant' },
+  'chat.intro': {
+    uz: "Rejalaringiz, sanalar va ilova haqida so'rang. Men barcha vazifalaringizni ko'raman.",
+    tr: 'Planlarınız, tarihler ve uygulama hakkında sorun. Tüm görevlerinizi görüyorum.',
+    en: 'Ask about your plans, dates, or the app. I can see all your tasks.',
+  },
+  'chat.placeholder': {
+    uz: "Savolingizni yozing…",
+    tr: 'Sorunuzu yazın…',
+    en: 'Type your question…',
+  },
+  'chat.send': { uz: 'Yuborish', tr: 'Gönder', en: 'Send' },
+  'chat.s1': {
+    uz: 'Bugun nima rejam bor?',
+    tr: 'Bugün planım ne?',
+    en: "What's on my plate today?",
+  },
+  'chat.s2': {
+    uz: 'Bu hafta qachon bo\'shman?',
+    tr: 'Bu hafta ne zaman boşum?',
+    en: "When am I free this week?",
+  },
+  'chat.s3': {
+    uz: 'Qanday qilib eslatma qo\'yaman?',
+    tr: 'Nasıl hatırlatma kurarım?',
+    en: 'How do I set a reminder?',
+  },
+  'chat.offline': {
+    uz: "Internet yo'q — AI yordamchi uchun ulanish kerak. Rejalaringiz esa oflayn ham ishlaydi.",
+    tr: 'İnternet yok — AI asistan için bağlantı gerekli. Planlarınız çevrimdışı da çalışır.',
+    en: 'No connection — the assistant needs internet. Your plans still work offline.',
+  },
+  'chat.error': {
+    uz: "Javob ololmadim. Birozdan keyin qayta urinib ko'ring.",
+    tr: 'Cevap alamadım. Birazdan tekrar deneyin.',
+    en: "Couldn't get an answer. Try again in a moment.",
+  },
+
+  /* --- Support --- */
+  'support.title': {
+    uz: 'Kotib — bepul ilova',
+    tr: 'Kotib — ücretsiz uygulama',
+    en: 'Kotib is free',
+  },
+  'support.body': {
+    uz: "Loyihani Tirikchilik orqali qo'llab-quvvatlashingiz mumkin",
+    tr: 'Projeyi Tirikchilik üzerinden destekleyebilirsiniz',
+    en: 'You can support the project via Tirikchilik',
+  },
 
   /* --- Today (plan.md §3.1) --- */
   'today.summary.tasks':   { uz: 'vazifa',    tr: 'görev',     en: 'tasks' },
@@ -119,6 +171,32 @@ const STRINGS: Record<string, Entry> = {
     uz: "Oddiy — hamma vazifa bitta ro'yxatda. Kengaytirilgan — muhimligi bo'yicha ajratiladi.",
     tr: 'Basit — tek liste. Gelişmiş — önceliğe göre ayrılır.',
     en: 'Simple keeps one list. Advanced splits the day by priority.',
+  },
+
+  /* --- Done style --- */
+  'set.doneStyle':        { uz: 'Bajarilgan vazifa', tr: 'Tamamlanan görev', en: 'Completed task' },
+  'set.doneStyle.chiziq': { uz: 'Chizilgan',         tr: 'Üstü çizili',      en: 'Struck through' },
+  'set.doneStyle.marker': { uz: 'Marker',            tr: 'Fosforlu kalem',   en: 'Highlighter' },
+  'set.doneStyle.xira':   { uz: 'Xira',              tr: 'Soluk',            en: 'Faded' },
+  'set.doneStyle.preview': {
+    uz: 'Bajarilgan vazifa shunday ko\'rinadi',
+    tr: 'Tamamlanan görev böyle görünür',
+    en: 'A completed task looks like this',
+  },
+  'set.doneStyle.hint': {
+    uz: "Marker — qog'ozdagidek marker bilan chizib qo'yiladi.",
+    tr: 'Fosforlu kalem — kağıttaki gibi üzeri boyanır.',
+    en: 'Highlighter strikes the task out the way you would on paper.',
+  },
+
+  /* --- Font --- */
+  'set.font':          { uz: 'Shrift',      tr: 'Yazı tipi',   en: 'Font' },
+  'set.font.manrope':  { uz: 'Oddiy',       tr: 'Normal',      en: 'Standard' },
+  'set.font.qolyozma': { uz: "Qo'lyozma",   tr: 'El yazısı',   en: 'Handwritten' },
+  'set.font.hint': {
+    uz: "Qo'lyozma — planshet va qalam bilan yozadiganlar uchun.",
+    tr: 'El yazısı — tablet ve kalemle yazanlar için.',
+    en: 'Handwritten suits tablet and stylus users.',
   },
 
   /* --- Progress --- */

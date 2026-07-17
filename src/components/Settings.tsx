@@ -1,17 +1,20 @@
 import { useRef, useState } from 'react';
 import { APP_NAME } from '../lib/branding';
 import { t } from '../lib/i18n';
+import { Support } from './Support';
 import {
-  createInitialState, exportJSON, importJSON, setLanguage,
-  setNotifications, setSkin, setTaskMode, setTheme, setWeekStart,
+  createInitialState, exportJSON, importJSON, setDoneStyle, setFont,
+  setLanguage, setNotifications, setSkin, setTaskMode, setTheme, setWeekStart,
 } from '../lib/store';
 import type {
-  AppState, Language, Skin, TaskMode, ThemeMode, WeekStart,
+  AppState, DoneStyle, FontChoice, Language, Skin, TaskMode, ThemeMode, WeekStart,
 } from '../lib/types';
 
 const THEMES: ThemeMode[] = ['light', 'dark', 'auto'];
 const SKINS: Skin[] = ['klassik', 'registon'];
 const TASK_MODES: TaskMode[] = ['simple', 'advanced'];
+const DONE_STYLES: DoneStyle[] = ['chiziq', 'marker', 'xira'];
+const FONTS: FontChoice[] = ['manrope', 'qolyozma'];
 const WEEK_STARTS: WeekStart[] = ['mon', 'sun'];
 /** Uzbek Latin first — it is the default (plan.md §3.5). */
 const LANGS: { id: Language; label: string }[] = [
@@ -96,6 +99,42 @@ export function Settings({ state, setState }: Props) {
         ))}
       </div>
       <p className="hint">{t('set.taskMode.hint')}</p>
+
+      <h2 className="section-label">{t('set.doneStyle')}</h2>
+      <div className="chips">
+        {DONE_STYLES.map((style) => (
+          <button
+            key={style}
+            className={`chip${state.settings.doneStyle === style ? ' is-on' : ''}`}
+            onClick={() => setState(setDoneStyle(state, style))}
+          >
+            {t(`set.doneStyle.${style}`)}
+          </button>
+        ))}
+      </div>
+      {/* Show the choice rather than describe it. */}
+      <ul className="tasklist donepreview">
+        <li className="taskrow is-done">
+          <span className="taskrow__body">
+            <span className="taskrow__title">{t('set.doneStyle.preview')}</span>
+          </span>
+        </li>
+      </ul>
+      <p className="hint">{t('set.doneStyle.hint')}</p>
+
+      <h2 className="section-label">{t('set.font')}</h2>
+      <div className="chips">
+        {FONTS.map((font) => (
+          <button
+            key={font}
+            className={`chip${state.settings.font === font ? ' is-on' : ''}`}
+            onClick={() => setState(setFont(state, font))}
+          >
+            {t(`set.font.${font}`)}
+          </button>
+        ))}
+      </div>
+      <p className="hint">{t('set.font.hint')}</p>
 
       <h2 className="section-label">{t('set.language')}</h2>
       <div className="chips">
@@ -186,6 +225,8 @@ export function Settings({ state, setState }: Props) {
           Hamyon
         </a>
       </p>
+
+      <Support />
     </section>
   );
 }
