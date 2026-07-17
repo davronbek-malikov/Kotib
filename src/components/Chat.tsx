@@ -6,13 +6,19 @@ import type { AppState } from '../lib/types';
 
 interface Props {
   state: AppState;
+  /**
+   * Owned by App, not by this component: switching tabs unmounts the screen,
+   * and an assistant that forgets the conversation the moment you check your
+   * calendar is not an assistant.
+   */
+  turns: ChatTurn[];
+  setTurns: (fn: (cur: ChatTurn[]) => ChatTurn[]) => void;
 }
 
 /** Openers that show what the assistant can actually do with real data. */
 const SUGGESTIONS = ['chat.s1', 'chat.s2', 'chat.s3'];
 
-export function Chat({ state }: Props) {
-  const [turns, setTurns] = useState<ChatTurn[]>([]);
+export function Chat({ state, turns, setTurns }: Props) {
   const [draft, setDraft] = useState('');
   const [thinking, setThinking] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
@@ -28,7 +34,7 @@ export function Chat({ state }: Props) {
     if (!q || thinking) return;
 
     const history = turns;
-    setTurns([...history, { role: 'user', text: q }]);
+    setTurns((cur) => [...cur, { role: 'user', text: q }]);
     setDraft('');
     setThinking(true);
 
@@ -66,6 +72,9 @@ export function Chat({ state }: Props) {
         </div>
       ) : (
         <div className="chat__log">
+          <button className="chat__clear" onClick={() => setTurns(() => [])}>
+            {t('chat.clear')}
+          </button>
           {turns.map((turn, i) => (
             <div key={i} className={`bubble bubble--${turn.role}`}>
               {turn.text}

@@ -1032,3 +1032,18 @@ button, a, input, select { min-height: var(--touch-min); }
   border-bottom: 1px solid var(--border);
   font-family: inherit;
 }
+
+.chat__clear {
+  align-self: center;
+  min-height: 32px;
+  padding: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  cursor: pointer;
+}
+
+.chat__clear:hover { color: var(--text); }

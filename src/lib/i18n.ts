@@ -29,16 +29,17 @@ const STRINGS: Record<string, Entry> = {
   /* --- AI assistant --- */
   'chat.title': { uz: 'AI yordamchi', tr: 'AI asistan', en: 'AI assistant' },
   'chat.intro': {
-    uz: "Rejalaringiz, sanalar va ilova haqida so'rang. Men barcha vazifalaringizni ko'raman.",
-    tr: 'Planlarınız, tarihler ve uygulama hakkında sorun. Tüm görevlerinizi görüyorum.',
-    en: 'Ask about your plans, dates, or the app. I can see all your tasks.',
+    uz: "Istalgan savolni bering — men rejalaringizni ham bilaman.",
+    tr: 'Her şeyi sorabilirsiniz — planlarınızı da biliyorum.',
+    en: 'Ask me anything — I also know your plans.',
   },
   'chat.placeholder': {
     uz: "Savolingizni yozing…",
     tr: 'Sorunuzu yazın…',
     en: 'Type your question…',
   },
-  'chat.send': { uz: 'Yuborish', tr: 'Gönder', en: 'Send' },
+  'chat.send':  { uz: 'Yuborish',      tr: 'Gönder',     en: 'Send' },
+  'chat.clear': { uz: 'Yangi suhbat',  tr: 'Yeni sohbet', en: 'New chat' },
   'chat.s1': {
     uz: 'Bugun nima rejam bor?',
     tr: 'Bugün planım ne?',

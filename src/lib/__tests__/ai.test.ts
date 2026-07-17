@@ -112,6 +112,28 @@ describe('handleAi', () => {
     vi.unstubAllGlobals();
   });
 
+  it('tells the model to answer general questions from its own knowledge', async () => {
+    // The assistant refused world knowledge ("Kontekstda Fransiya poytaxti
+    // haqida ma'lumot yo'q") because the prompt applied the no-invention rule
+    // to everything. The rule must bind only the user's personal data.
+    const fetchMock = vi.fn(async () =>
+      new Response(JSON.stringify({ choices: [{ message: { content: 'ok' } }] }), { status: 200 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await handleAi(body, { GROQ_API_KEY: 'k' });
+
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    const sent = JSON.parse(init.body as string) as { messages: { content: string }[] };
+    const system = sent.messages[0].content;
+
+    expect(system).toContain('O\'Z BILIMING');
+    expect(system).toContain('BOSH TORTMA');
+    // And the no-invention rule must still be scoped to personal data.
+    expect(system).toContain('SHAXSIY');
+    vi.unstubAllGlobals();
+  });
+
   it('throws on a provider error rather than returning a broken answer', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response('nope', { status: 500 })));
     await expect(handleAi(body, { GROQ_API_KEY: 'k' })).rejects.toThrow();

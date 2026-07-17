@@ -7,6 +7,7 @@ import { Settings } from './components/Settings';
 import { TabBar, type Tab } from './components/TabBar';
 import { Today } from './components/Today';
 import { Icon } from './icons/Icon';
+import type { ChatTurn } from './lib/ai/client';
 import { announcementText, pendingAnnouncement } from './lib/announcement';
 import { APK_URL, nativeUpdateNeeded } from './lib/appVersion';
 import { createBridge, isNative } from './lib/bridge';
@@ -42,6 +43,9 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('today');
   const [banner, setBanner] = useState<ScheduledReminder | null>(null);
   const [updateNeeded, setUpdateNeeded] = useState(false);
+  // Held here, not in Chat: switching tabs unmounts the screen, and the
+  // conversation must survive a glance at the calendar.
+  const [turns, setTurns] = useState<ChatTurn[]>([]);
 
   // i18n reads a module-level active locale (Hamyon's pattern), so keep it in
   // sync before children render.
@@ -123,10 +127,10 @@ export default function App() {
       case 'today':    return <Today state={state} setState={setState} />;
       case 'calendar': return <Calendar state={state} setState={setState} />;
       case 'lists':    return <Checklists state={state} setState={setState} />;
-      case 'chat':     return <Chat state={state} />;
+      case 'chat':     return <Chat state={state} turns={turns} setTurns={setTurns} />;
       case 'settings': return <Settings state={state} setState={setState} />;
     }
-  }, [tab, state]);
+  }, [tab, state, turns]);
 
   return (
     <>
