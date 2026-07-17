@@ -263,6 +263,18 @@ export function Settings({ state, setState }: Props) {
                 </span>
               </a>
             </div>
+
+            {/* Google Play requires a reachable privacy policy; both live as
+                static pages so they are linkable from the store listing too. */}
+            <div className="sgroup">
+              <a className="orow" href="/privacy.html" target="_blank" rel="noreferrer">
+                <span className="srow__title">{t('set.privacy')}</span>
+              </a>
+              <a className="orow" href="/terms.html" target="_blank" rel="noreferrer">
+                <span className="srow__title">{t('set.terms')}</span>
+              </a>
+            </div>
+
             <Support />
           </>
         )}

@@ -226,12 +226,26 @@ describe('App smoke', () => {
     expect(document.documentElement.getAttribute('data-font')).toBe('qolyozma');
   });
 
-  it('offers the Tirikchilik support link', async () => {
+  it('offers support quietly, without advertising', async () => {
     const user = userEvent.setup();
     render(<App />);
 
     await user.click(screen.getByLabelText('Sozlamalar'));
-    const link = screen.getByRole('link', { name: /Tirikchilik/ });
+    const link = screen.getByRole('link', { name: /qo'llab-quvvatlash/i });
     expect(link.getAttribute('href')).toContain('tirikchilik.uz');
+  });
+
+  it('links the privacy policy and terms — Google Play requires them', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await openSetting(user, /^Haqida/);
+
+    expect(
+      screen.getByRole('link', { name: 'Maxfiylik siyosati' }).getAttribute('href'),
+    ).toBe('/privacy.html');
+    expect(
+      screen.getByRole('link', { name: 'Foydalanish shartlari' }).getAttribute('href'),
+    ).toBe('/terms.html');
   });
 });

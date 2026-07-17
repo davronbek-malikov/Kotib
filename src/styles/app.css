@@ -619,43 +619,27 @@ button, a, input, select { min-height: var(--touch-min); }
 .chat__send { flex: 0 0 auto; width: 52px; display: grid; place-items: center; }
 
 /* ==========================================================================
-   Support
+   Support — a quiet text button, not a banner. It should read as an offer you
+   can ignore, never as an advert.
    ========================================================================== */
 .support {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-3);
-  margin-top: var(--space-4);
-  padding: var(--space-3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  background: var(--bg);
-  box-shadow: var(--shadow-card);
-  color: inherit;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 40px;
+  margin: var(--space-2) 0 var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  background: none;
+  border: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
   text-decoration: none;
-  min-height: 0;
+  transition: color 200ms ease;
 }
 
-.support__mark {
-  flex: 0 0 auto;
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-input);
-  font-family: "Caveat", cursive;
-  font-weight: 700;
-  font-size: 13px;
-  line-height: 1.05;
-  text-align: center;
-  letter-spacing: 0.5px;
-  color: var(--text);
-}
-
-.support__text { display: flex; flex-direction: column; gap: 2px; }
-.support__text strong { font-size: var(--fs-body); }
-.support__text span { font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-muted); }
+.support:hover { color: var(--accent); }
 
 .btn {
   flex: 1;

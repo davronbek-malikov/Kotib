@@ -68,15 +68,14 @@ const STRINGS: Record<string, Entry> = {
 
   /* --- Support --- */
   'support.title': {
-    uz: 'Kotib — bepul ilova',
-    tr: 'Kotib — ücretsiz uygulama',
-    en: 'Kotib is free',
+    uz: "Loyihani qo'llab-quvvatlash",
+    tr: 'Projeyi destekle',
+    en: 'Support the project',
   },
-  'support.body': {
-    uz: "Loyihani Tirikchilik orqali qo'llab-quvvatlashingiz mumkin",
-    tr: 'Projeyi Tirikchilik üzerinden destekleyebilirsiniz',
-    en: 'You can support the project via Tirikchilik',
-  },
+
+  /* --- Legal (Google Play requires a reachable privacy policy) --- */
+  'set.privacy': { uz: 'Maxfiylik siyosati', tr: 'Gizlilik politikası', en: 'Privacy policy' },
+  'set.terms':   { uz: 'Foydalanish shartlari', tr: 'Kullanım şartları', en: 'Terms of use' },
 
   /* --- Today (plan.md §3.1) --- */
   'today.summary.tasks':   { uz: 'vazifa',    tr: 'görev',     en: 'tasks' },
