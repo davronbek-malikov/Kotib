@@ -33,4 +33,17 @@ describe('i18n', () => {
     setLang('uz');
     expect(t('nope.missing')).toBe('nope.missing');
   });
+
+  it('has a title for every Settings detail page', () => {
+    // Settings derives each page title from `set.<page>`, so a page without a
+    // string would render its own key to the user.
+    const PAGES = [
+      'theme', 'skin', 'font', 'taskMode', 'doneStyle',
+      'weekStart', 'notifications', 'language', 'data', 'about',
+    ];
+    setLang('uz');
+    for (const page of PAGES) {
+      expect(t(`set.${page}`), `Settings page "${page}" has no title`).not.toBe(`set.${page}`);
+    }
+  });
 });

@@ -82,23 +82,33 @@ button, a, input, select { min-height: var(--touch-min); }
   padding: var(--space-3) var(--space-4) 0;
 }
 
+/* A soft disc that sits quietly in the corner: no outline, just a lift off the
+   canvas. Tokenised so it survives dark mode and both skins. */
 .gear {
   width: 40px;
   height: 40px;
   min-height: 40px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: 50%;
   background: var(--bg);
   color: var(--text-muted);
   box-shadow: var(--shadow-card);
   cursor: pointer;
-  transition: color 200ms ease, border-color 200ms ease;
+  transition: color 200ms ease, box-shadow 200ms ease, transform 160ms ease;
 }
 
-.gear.is-on { color: var(--accent); border-color: var(--accent); }
-.gear:hover { color: var(--accent); }
+.gear:hover { color: var(--text); box-shadow: var(--shadow-nav); }
+.gear.is-on { color: var(--accent); background: var(--accent-soft); }
+
+.gear:active { transform: scale(0.96); }
+
+:root[data-theme='dark'] .gear {
+  background: var(--bg);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
 
 /* --- Today card: the hero moment (plan.md §2.1) --- */
 .todaycard {
@@ -779,18 +789,221 @@ button, a, input, select { min-height: var(--touch-min); }
 .cal__dot.is-on   { background: var(--accent); }
 .cal__dot.is-done { background: transparent; border-color: var(--accent); }
 
-/* --- Settings --- */
-.row {
+/* ==========================================================================
+   Settings — the classic phone-settings pattern: a tinted page, white grouped
+   cards, a coloured icon tile per row, and the current value as a subtitle so
+   the whole list reads without opening anything.
+   ========================================================================== */
+.sset {
+  background: #f4f4f4;
+  margin: 0;
+  min-height: 100%;
+  padding-inline: 0;
+}
+
+.sset__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: var(--touch-min);
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--border);
+  gap: var(--space-4);
+  padding: var(--space-1) var(--space-6) var(--space-4);
 }
 
-.row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
+.sset__title {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.sset__search {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #111;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.sset__search:hover,
+.sset__search.is-on {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.sset__searchbox {
+  width: calc(100% - var(--space-8));
+  margin: 0 var(--space-4) var(--space-4);
+}
+
+.sgroup {
+  background: var(--bg);
+  border: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  margin: 0 var(--space-4) var(--space-6);
+}
+
+.srow, .orow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: 72px;
+  padding: var(--space-3) var(--space-6);
+  background: none;
+  border: 0;
+  color: var(--text);
+  text-align: left;
+  text-decoration: none;
+  font-size: var(--fs-body);
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.srow:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: var(--space-6);
+  bottom: 0;
+  left: 86px;
+  height: 1px;
+  background: var(--border);
+}
+
+.orow:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: var(--space-4);
+  bottom: 0;
+  left: var(--space-4);
+  height: 1px;
+  background: var(--border);
+}
+
+.srow:hover, .orow:hover { background: rgba(0, 0, 0, 0.035); }
+
+/* The coloured tile is what makes a settings list scannable at a glance. */
+.srow__tile {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: #fff;
+}
+
+.srow__tile--blue   { background: #3b82f6; }
+.srow__tile--violet { background: #8b5cf6; }
+.srow__tile--orange { background: #f97316; }
+.srow__tile--green  { background: #22a565; }
+.srow__tile--pink   { background: #ec4899; }
+.srow__tile--teal   { background: #14b8a6; }
+.srow__tile--grey   { background: #6b7280; }
+.srow__tile--red    { background: var(--danger); }
+
+.srow__text {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.srow__title {
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.srow__value {
+  font-size: 14px;
+  line-height: 20px;
+  color: #8a8f8c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.srow--danger .srow__title { color: var(--danger); }
+
+:root[data-theme='dark'] .sset {
+  background: #0d0f0e;
+}
+
+:root[data-theme='dark'] .sset__search {
+  color: var(--text);
+}
+
+:root[data-theme='dark'] .sset__search:hover,
+:root[data-theme='dark'] .sset__search.is-on {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme='dark'] .srow:hover,
+:root[data-theme='dark'] .orow:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* --- Detail pages --- */
+.sdetail__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.sback {
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.sback:hover { background: var(--bg); }
+
+.sdetail__title {
+  margin: 0;
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
+  font-weight: var(--fw-display);
+  letter-spacing: 0;
+}
+
+.orow { justify-content: space-between; }
+.orow--danger .srow__title { color: var(--danger); }
+.orow__tick { flex: 0 0 auto; color: var(--accent); }
+.orow.is-on .srow__title { color: var(--accent); font-weight: 600; }
+
+.row input[type="checkbox"],
+.orow input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  accent-color: var(--accent);
+  flex: 0 0 auto;
+}
+
 .input--inline { width: auto; min-height: 36px; padding: var(--space-1) var(--space-2); }
+
+.sset .hint {
+  margin: calc(var(--space-4) * -1 + var(--space-1)) var(--space-4) var(--space-4);
+}
+.sset .donepreview { padding: 0 var(--space-4); margin-bottom: var(--space-2); }
+.sset .support { margin: 0 var(--space-4) var(--space-4); }
+.sset .empty { margin-inline: var(--space-4); }
+.sset .error { margin-inline: var(--space-4); }
 
 .error { color: var(--danger); font-size: var(--fs-caption); }
 .link { color: var(--accent); }

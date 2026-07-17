@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { UserEvent } from '@testing-library/user-event';
 import App from '../App';
 
 /**
@@ -68,11 +69,17 @@ describe('App smoke', () => {
     expect(screen.getByText('Planyorka')).toBeTruthy();
   });
 
+  /** Settings is a classic list now: open the gear, then the detail page. */
+  async function openSetting(user: UserEvent, row: string | RegExp) {
+    await user.click(screen.getByLabelText('Sozlamalar'));
+    await user.click(screen.getByRole('button', { name: row }));
+  }
+
   it('switches every label when the locale changes', async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByLabelText('Sozlamalar'));
+    await openSetting(user, /^Til/);
     await user.click(screen.getByRole('button', { name: 'English' }));
 
     const nav = screen.getByRole('navigation');
@@ -84,10 +91,30 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByLabelText('Sozlamalar'));
+    await openSetting(user, /^Ko'rinish/);
     await user.click(screen.getByRole('button', { name: "Qorong'i" }));
 
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+  });
+
+  it('shows each setting\'s current value on the list, without opening it', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByLabelText('Sozlamalar'));
+    // The row reads "Uslub / Klassik" — value visible at a glance.
+    expect(screen.getByRole('button', { name: /Uslub.*Klassik/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Shrift.*Oddiy/ })).toBeTruthy();
+  });
+
+  it('goes back from a detail page to the settings list', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await openSetting(user, /^Uslub/);
+    await user.click(screen.getByLabelText('Orqaga'));
+
+    expect(screen.getByRole('button', { name: /Shrift/ })).toBeTruthy();
   });
 
   it('completes a task when the check is clicked, and strikes it through', async () => {
@@ -108,7 +135,7 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByLabelText('Sozlamalar'));
+    await openSetting(user, /^Uslub/);
     await user.click(screen.getByRole('button', { name: 'Registon' }));
 
     expect(document.documentElement.getAttribute('data-skin')).toBe('registon');
@@ -118,7 +145,7 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByLabelText('Sozlamalar'));
+    await openSetting(user, /^Vazifa rejimi/);
     await user.click(screen.getByRole('button', { name: 'Kengaytirilgan' }));
     await user.click(screen.getByText('Bugun'));
 
@@ -136,9 +163,9 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    expect(screen.getByText(/AI yordamchi keldi/)).toBeTruthy();
+    expect(screen.getByText(/Kotib yangilandi/)).toBeTruthy();
     await user.click(screen.getByLabelText('Yopish'));
-    expect(screen.queryByText(/AI yordamchi keldi/)).toBeNull();
+    expect(screen.queryByText(/Kotib yangilandi/)).toBeNull();
   });
 
   it('opens the assistant and asks it a real question', async () => {
@@ -183,7 +210,7 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByLabelText('Sozlamalar'));
+    await openSetting(user, /^Bajarilgan vazifa/);
     await user.click(screen.getByRole('button', { name: 'Marker' }));
 
     expect(document.documentElement.getAttribute('data-done')).toBe('marker');
@@ -193,7 +220,7 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(screen.getByLabelText('Sozlamalar'));
+    await openSetting(user, /^Shrift/);
     await user.click(screen.getByRole('button', { name: "Qo'lyozma" }));
 
     expect(document.documentElement.getAttribute('data-font')).toBe('qolyozma');

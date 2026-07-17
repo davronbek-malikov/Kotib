@@ -148,10 +148,30 @@ const STRINGS: Record<string, Entry> = {
 
   /* --- Settings (plan.md §3.5) --- */
   'set.appearance':    { uz: "Ko'rinish",       tr: 'Görünüm',       en: 'Appearance' },
+  'set.theme':         { uz: "Ko'rinish",       tr: 'Görünüm',       en: 'Appearance' },
+  'set.notif.on':      { uz: 'Yoqilgan',        tr: 'Açık',          en: 'On' },
+  'set.notif.off':     { uz: "O'chirilgan",     tr: 'Kapalı',        en: 'Off' },
+  'set.data.value':    { uz: 'Zaxira · Tiklash', tr: 'Yedek · Geri yükle', en: 'Backup · Restore' },
+  'set.about.hamyon': {
+    uz: 'Pulingiz nazoratda — opa-singil ilova',
+    tr: 'Kardeş uygulama',
+    en: 'Our sister app for money',
+  },
+  'common.back':       { uz: 'Orqaga',          tr: 'Geri',          en: 'Back' },
   'set.theme.light':   { uz: "Yorug'",          tr: 'Açık',          en: 'Light' },
   'set.theme.dark':    { uz: "Qorong'i",        tr: 'Koyu',          en: 'Dark' },
   'set.theme.auto':    { uz: 'Avto',            tr: 'Otomatik',      en: 'Auto' },
   'set.language':      { uz: 'Til',             tr: 'Dil',           en: 'Language' },
+  'set.search': {
+    uz: 'Sozlamalardan qidirish',
+    tr: 'Ayarlarda ara',
+    en: 'Search settings',
+  },
+  'set.search.empty': {
+    uz: 'Mos sozlama topilmadi',
+    tr: 'Eşleşen ayar yok',
+    en: 'No matching settings',
+  },
 
   /* --- Skin --- */
   'set.skin':          { uz: 'Uslub',           tr: 'Tema',          en: 'Style' },

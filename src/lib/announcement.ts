@@ -24,16 +24,16 @@ export interface Announcement {
 }
 
 export const ANNOUNCEMENT: Announcement | null = {
-  id: '2026-07-16-phase2-ai',
+  id: '2026-07-17-classic-settings',
   title: {
-    uz: 'AI yordamchi keldi 🤖',
-    tr: 'AI asistan geldi 🤖',
-    en: 'The AI assistant is here 🤖',
+    uz: 'Kotib yangilandi',
+    tr: 'Kotib güncellendi',
+    en: 'Kotib has been updated',
   },
   body: {
-    uz: "Pastdagi «AI yordamchi» — rejalaringizni biladi, savollarga javob beradi. Yana: marker uslubi, qo'lyozma shrifti, yangi dizayn. Qayta o'rnatish shart emas — ilova o'zi yangilandi.",
-    tr: 'Alttaki «AI asistan» planlarınızı biliyor ve sorularınızı yanıtlıyor. Ayrıca: fosforlu kalem, el yazısı, yeni tasarım. Yeniden yükleme yok — uygulama kendini güncelledi.',
-    en: 'The new AI assistant knows your plans and answers questions. Plus: highlighter style, handwriting font, new design. No reinstall — the app updated itself.',
+    uz: "Sozlamalar endi klassik telefon uslubida, yuqoridagi sozlamalar belgisi ham yangilandi. Ilovani ochganingizda hammasi tayyor bo'ladi.",
+    tr: 'Ayarlar artık klasik telefon stilinde, üstteki ayarlar simgesi de yenilendi. Uygulamayı açtığınızda her şey hazır olacak.',
+    en: 'Settings now use the classic phone style, and the top settings icon has been refreshed. Everything is ready when you open the app.',
   },
 };
 
