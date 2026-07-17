@@ -158,7 +158,7 @@ describe('App smoke', () => {
 
     // The user's tasks and today's date must actually reach the proxy —
     // otherwise it is a chatbot, not a secretary.
-    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe('/api/ai');
     const sent = JSON.parse(init.body as string) as { context: { bugun: unknown; ilova: unknown } };
     expect(sent.context.bugun).toBeTruthy();

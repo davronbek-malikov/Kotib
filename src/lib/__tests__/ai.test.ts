@@ -91,7 +91,7 @@ describe('handleAi', () => {
     const result = await handleAi(body, { GROQ_API_KEY: 'test-key' });
     expect(result.answer).toBe('3 ta vazifa');
 
-    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     const headers = init.headers as Record<string, string>;
     expect(headers.Authorization).toBe('Bearer test-key');
     vi.unstubAllGlobals();
@@ -105,7 +105,7 @@ describe('handleAi', () => {
 
     await handleAi({ ...body, context: { bugun: { sana: '2026-07-16' } } }, { GROQ_API_KEY: 'k' });
 
-    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     const sent = JSON.parse(init.body as string) as { messages: { role: string; content: string }[] };
     expect(sent.messages[0].role).toBe('system');
     expect(sent.messages[0].content).toContain('2026-07-16');
@@ -130,7 +130,7 @@ describe('handleAi', () => {
     }));
     await handleAi({ ...body, history }, { GROQ_API_KEY: 'k' });
 
-    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     const sent = JSON.parse(init.body as string) as { messages: unknown[] };
     // system + 8 history turns + the question
     expect(sent.messages).toHaveLength(10);
