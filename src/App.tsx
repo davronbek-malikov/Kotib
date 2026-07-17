@@ -41,6 +41,8 @@ export default function App() {
     rollOverdue(loadState(), todayISO()),
   );
   const [tab, setTab] = useState<Tab>('today');
+  /** Where the gear was pressed from, so Settings can return there. */
+  const [prevTab, setPrevTab] = useState<Tab>('today');
   const [banner, setBanner] = useState<ScheduledReminder | null>(null);
   const [updateNeeded, setUpdateNeeded] = useState(false);
   // Held here, not in Chat: switching tabs unmounts the screen, and the
@@ -128,9 +130,10 @@ export default function App() {
       case 'calendar': return <Calendar state={state} setState={setState} />;
       case 'lists':    return <Checklists state={state} setState={setState} />;
       case 'chat':     return <Chat state={state} turns={turns} setTurns={setTurns} />;
-      case 'settings': return <Settings state={state} setState={setState} />;
+      case 'settings':
+        return <Settings state={state} setState={setState} onBack={() => setTab(prevTab)} />;
     }
-  }, [tab, state, turns]);
+  }, [tab, state, turns, prevTab]);
 
   return (
     <>
@@ -164,17 +167,22 @@ export default function App() {
       )}
 
       {/* Settings left the tab bar for the assistant, so it lives up here —
-          the same gear Hamyon uses. */}
-      <header className="topbar">
-        <button
-          className={`gear${tab === 'settings' ? ' is-on' : ''}`}
-          onClick={() => setTab(tab === 'settings' ? 'today' : 'settings')}
-          aria-label={t('nav.settings')}
-          aria-pressed={tab === 'settings'}
-        >
-          <Icon name="settings" size={20} />
-        </button>
-      </header>
+          the same gear Hamyon uses. Settings has its own back button, so the
+          gear is hidden while it is open. */}
+      {tab !== 'settings' && (
+        <header className="topbar">
+          <button
+            className="gear"
+            onClick={() => {
+              setPrevTab(tab);
+              setTab('settings');
+            }}
+            aria-label={t('nav.settings')}
+          >
+            <Icon name="settings" size={20} />
+          </button>
+        </header>
+      )}
 
       {screen}
       <TabBar active={tab} onChange={setTab} />

@@ -2,12 +2,9 @@ import { Icon } from '../icons/Icon';
 import { t } from '../lib/i18n';
 
 /**
- * Kotib is free and has no server, so there is nothing to sell. This is the
- * one place someone can choose to support it.
- *
- * Deliberately a plain text button, not a card with a logo: a block with
- * branding reads as an advertisement, and an app that begs is worse than an
- * app that never asks. It sits at the foot of Settings and says its piece once.
+ * Kotib is free, has no server and sells nothing. This is the one place
+ * someone can choose to support it, and it lives at the foot of the home
+ * screen — below the day's tasks, so it is seen but never in the way.
  */
 export function Support() {
   return (
@@ -17,7 +14,7 @@ export function Support() {
       target="_blank"
       rel="noreferrer"
     >
-      <Icon name="heart" size={15} />
+      <Icon name="heart" size={17} />
       <span>{t('support.title')}</span>
     </a>
   );

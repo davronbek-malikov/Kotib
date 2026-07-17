@@ -3,7 +3,6 @@ import { APP_NAME } from '../lib/branding';
 import { t } from '../lib/i18n';
 import { Icon, type IconName } from '../icons/Icon';
 import { OptionList, SettingsRow, type Tone } from './SettingsRow';
-import { Support } from './Support';
 import {
   createInitialState, exportJSON, importJSON, setDoneStyle, setFont,
   setLanguage, setNotifications, setSkin, setTaskMode, setTheme, setWeekStart,
@@ -42,9 +41,11 @@ interface SettingsItem {
 interface Props {
   state: AppState;
   setState: (s: AppState) => void;
+  /** Returns to whichever tab the gear was pressed from. */
+  onBack: () => void;
 }
 
-export function Settings({ state, setState }: Props) {
+export function Settings({ state, setState, onBack }: Props) {
   const [page, setPage] = useState<Page>('index');
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -274,8 +275,6 @@ export function Settings({ state, setState }: Props) {
                 <span className="srow__title">{t('set.terms')}</span>
               </a>
             </div>
-
-            <Support />
           </>
         )}
       </section>
@@ -346,6 +345,11 @@ export function Settings({ state, setState }: Props) {
   return (
     <section className="screen sset">
       <header className="sset__head">
+        {/* The gear can be pressed from any tab, so leaving must return there
+            rather than dumping the user on the home screen. */}
+        <button className="sback" onClick={onBack} aria-label={t('common.back')}>
+          <Icon name="back" size={20} />
+        </button>
         <h1 className="screen__title sset__title">{t('nav.settings')}</h1>
         <button
           className={`sset__search${searchOpen ? ' is-on' : ''}`}
@@ -389,8 +393,6 @@ export function Settings({ state, setState }: Props) {
       ))}
 
       {visibleGroups.length === 0 && <p className="empty">{t('set.search.empty')}</p>}
-
-      <Support />
     </section>
   );
 }

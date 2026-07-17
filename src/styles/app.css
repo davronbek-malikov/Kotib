@@ -619,8 +619,8 @@ button, a, input, select { min-height: var(--touch-min); }
 .chat__send { flex: 0 0 auto; width: 52px; display: grid; place-items: center; }
 
 /* ==========================================================================
-   Support — a quiet text button, not a banner. It should read as an offer you
-   can ignore, never as an advert.
+   Support — a real button, but in the app's own accent rather than a loud
+   brand block. It reads as part of Kotib, not as an advert for someone else.
    ========================================================================== */
 .support {
   display: inline-flex;
@@ -628,18 +628,22 @@ button, a, input, select { min-height: var(--touch-min); }
   justify-content: center;
   gap: var(--space-2);
   width: 100%;
-  min-height: 40px;
-  margin: var(--space-2) 0 var(--space-4);
-  padding: var(--space-2) var(--space-3);
-  background: none;
-  border: 0;
-  color: var(--text-muted);
-  font-size: var(--fs-caption);
+  min-height: var(--touch-min);
+  margin: var(--space-8) 0 var(--space-2);
+  padding: var(--space-3);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: var(--radius-input);
+  color: var(--accent);
+  font-size: var(--fs-body);
+  font-weight: 600;
   text-decoration: none;
-  transition: color 200ms ease;
+  cursor: pointer;
+  transition: background 200ms ease, transform 160ms ease;
 }
 
-.support:hover { color: var(--accent); }
+.support:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.support:active { transform: scale(0.99); }
 
 .btn {
   flex: 1;
@@ -785,13 +789,16 @@ button, a, input, select { min-height: var(--touch-min); }
   padding-inline: 0;
 }
 
+/* back · title · search — the title takes the slack so the two controls stay
+   pinned to the edges. */
 .sset__head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-1) var(--space-6) var(--space-4);
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2) var(--space-4);
 }
+
+.sset__head .sset__title { flex: 1 1 auto; }
 
 .sset__title {
   margin: 0;

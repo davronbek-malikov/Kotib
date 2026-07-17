@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { UserEvent } from '@testing-library/user-event';
 import App from '../App';
+import { ANNOUNCEMENT, announcementText } from '../lib/announcement';
 
 /**
  * A smoke test, not a component suite. It exists to catch the failures that
@@ -163,9 +164,13 @@ describe('App smoke', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    expect(screen.getByText(/Kotib yangilandi/)).toBeTruthy();
+    // Asserted against the shipped announcement rather than a hardcoded
+    // string, so sending a new broadcast doesn't fail this test.
+    const { title } = announcementText(ANNOUNCEMENT!);
+    expect(screen.getByText(title)).toBeTruthy();
+
     await user.click(screen.getByLabelText('Yopish'));
-    expect(screen.queryByText(/Kotib yangilandi/)).toBeNull();
+    expect(screen.queryByText(title)).toBeNull();
   });
 
   it('opens the assistant and asks it a real question', async () => {
@@ -226,13 +231,27 @@ describe('App smoke', () => {
     expect(document.documentElement.getAttribute('data-font')).toBe('qolyozma');
   });
 
-  it('offers support quietly, without advertising', async () => {
+  it('offers support on the home screen, not buried in settings', async () => {
+    render(<App />);
+
+    // Visible on Bugun without opening anything.
+    const link = screen.getByRole('link', { name: /qo'llab-quvvatlash/i });
+    expect(link.getAttribute('href')).toContain('tirikchilik.uz');
+  });
+
+  it('returns from Settings to the tab it was opened from', async () => {
     const user = userEvent.setup();
     render(<App />);
 
+    // Open the gear from Taqvim, not from Bugun.
+    await user.click(screen.getByText('Taqvim'));
     await user.click(screen.getByLabelText('Sozlamalar'));
-    const link = screen.getByRole('link', { name: /qo'llab-quvvatlash/i });
-    expect(link.getAttribute('href')).toContain('tirikchilik.uz');
+    expect(screen.getByRole('button', { name: /Shrift/ })).toBeTruthy();
+
+    // Back must land on Taqvim — dumping the user on Bugun loses their place.
+    await user.click(screen.getByLabelText('Orqaga'));
+    const nav = screen.getByRole('navigation');
+    expect(within(nav).getByText('Taqvim').closest('button')?.className).toContain('is-active');
   });
 
   it('links the privacy policy and terms — Google Play requires them', async () => {

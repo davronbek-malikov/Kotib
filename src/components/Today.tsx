@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ProgressRing } from './ProgressRing';
 import { QuickAdd } from './QuickAdd';
+import { Support } from './Support';
 import { TaskRow } from './TaskRow';
 import { Toast } from './Toast';
 import { WeekStrip } from './WeekStrip';
@@ -113,6 +114,9 @@ export function Today({ state, setState }: Props) {
       ) : (
         simpleList()
       )}
+
+      {/* Below the day's work, never above it. */}
+      <Support />
 
       <button className="fab" onClick={() => setAdding(true)} aria-label={t('add.title')}>
         <Icon name="plus" size={26} />

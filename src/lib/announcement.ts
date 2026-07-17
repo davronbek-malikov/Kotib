@@ -24,16 +24,16 @@ export interface Announcement {
 }
 
 export const ANNOUNCEMENT: Announcement | null = {
-  id: '2026-07-17-classic-settings',
+  id: '2026-07-17-assistant-answers-anything',
   title: {
-    uz: 'Kotib yangilandi',
-    tr: 'Kotib güncellendi',
-    en: 'Kotib has been updated',
+    uz: 'AI yordamchi endi hamma savolga javob beradi 🤖',
+    tr: 'AI asistan artık her soruyu yanıtlıyor 🤖',
+    en: 'The AI assistant now answers anything 🤖',
   },
   body: {
-    uz: "Sozlamalar endi klassik telefon uslubida, yuqoridagi sozlamalar belgisi ham yangilandi. Ilovani ochganingizda hammasi tayyor bo'ladi.",
-    tr: 'Ayarlar artık klasik telefon stilinde, üstteki ayarlar simgesi de yenilendi. Uygulamayı açtığınızda her şey hazır olacak.',
-    en: 'Settings now use the classic phone style, and the top settings icon has been refreshed. Everything is ready when you open the app.',
+    uz: "Istalgan narsani so'rang — rejalaringizni ham biladi. Suhbat endi sahifa almashtirsangiz ham yo'qolmaydi. Yana: maxfiylik siyosati va har sahifada «Orqaga» tugmasi. Qayta o'rnatish shart emas.",
+    tr: 'Her şeyi sorun — planlarınızı da biliyor. Sohbet artık sekme değiştirince kaybolmuyor. Ayrıca: gizlilik politikası ve her sayfada «Geri» düğmesi. Yeniden yükleme yok.',
+    en: 'Ask it anything — it still knows your plans. Your chat no longer disappears when you switch tabs. Plus: a privacy policy and a Back button on every page. No reinstall needed.',
   },
 };
 
