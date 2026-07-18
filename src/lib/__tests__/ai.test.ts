@@ -171,8 +171,8 @@ describe('handleAi', () => {
 
     const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     const sent = JSON.parse(init.body as string) as { messages: unknown[] };
-    // system + 8 history turns + the question
-    expect(sent.messages).toHaveLength(10);
+    // system + 8 history turns + the question + the trailing language reminder
+    expect(sent.messages).toHaveLength(11);
     vi.unstubAllGlobals();
   });
 });

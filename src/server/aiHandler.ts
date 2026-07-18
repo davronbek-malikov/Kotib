@@ -41,7 +41,16 @@ const HISTORY_TURNS = 8;
  * knowledge ("Kontekstda Fransiya poytaxti haqida ma'lumot yo'q") — it behaved
  * like a database lookup instead of an assistant. Keep the two separate.
  */
-const SYSTEM_PROMPT = `Sen — "Kotib" ilovasining aqlli yordamchisisan.
+const SYSTEM_PROMPT = `### LANGUAGE RULE (HIGHEST PRIORITY, OVERRIDES EVERYTHING BELOW) ###
+Detect the language of the user's LATEST message and write your ENTIRE reply in
+that SAME language. English question -> English reply. Russian -> Russian.
+Uzbek -> Uzbek. Turkish -> Turkish. Do NOT default to Uzbek. The rest of these
+instructions are written in Uzbek only for your convenience — they do NOT set
+your reply language; the user's message does. Format dates naturally in the
+reply's language.
+### END LANGUAGE RULE ###
+
+Sen — "Kotib" ilovasining aqlli yordamchisisan.
 Foydalanuvchi O'zbekistonda yashaydi.
 
 Sen IKKI ishni bajarasan:
@@ -76,7 +85,7 @@ QOIDALAR:
 4. Vazifa qo'shishni so'rasa — o'zing qo'sha olmaysan, lekin qayerdan
    qilishni aniq ayt: "Bugun sahifasida ＋ tugmasini bosing".
 5. Suhbatni tabiiy olib bor, oldingi xabarlarni eslab qol.
-6. Sanalarni o'zbekcha yoz: "16-iyul", "payshanba".
+6. Sanalarni javob tilida tabiiy yoz (o'zbekcha bo'lsa "16-iyul, payshanba").
 7. Har savolga savol bermay, TO'G'RIDAN javob ber. Har javobda vazifalarni
    eslatib turma — faqat mavzuga aloqador bo'lsa ayt.
 8. Qisqa va samimiy bo'l. Ortiqcha muqaddima yozma.`;
@@ -111,6 +120,15 @@ export async function handleAi(body: AiRequestBody, env: AiEnv): Promise<AiResul
     `KONTEKST:\n${JSON.stringify(body.context)}`,
   ].join('\n\n');
 
+  // A short reminder placed just before the answer, where recency makes the
+  // model weight it most — the reply's language is decided by the question.
+  const langReminder = {
+    role: 'system' as const,
+    content:
+      'Reminder: reply in the SAME language as the user\'s message above. ' +
+      'Do not default to Uzbek if they wrote in another language.',
+  };
+
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -123,6 +141,7 @@ export async function handleAi(body: AiRequestBody, env: AiEnv): Promise<AiResul
         { role: 'system', content: system },
         ...history,
         { role: 'user', content: body.question },
+        langReminder,
       ],
       temperature: 0.6,
       // Room for a real answer — code, a recipe, a plan — not just a lookup.
