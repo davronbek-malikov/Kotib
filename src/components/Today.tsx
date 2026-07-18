@@ -17,9 +17,10 @@ import type { AppState, Task } from '../lib/types';
 interface Props {
   state: AppState;
   setState: (s: AppState) => void;
+  onCelebrate: (kind: 'one' | 'all') => void;
 }
 
-export function Today({ state, setState }: Props) {
+export function Today({ state, setState, onCelebrate }: Props) {
   const [selected, setSelected] = useState(todayISO());
   const [adding, setAdding] = useState(false);
   const [undo, setUndo] = useState<Task | null>(null);
@@ -27,6 +28,15 @@ export function Today({ state, setState }: Props) {
   const tasks = tasksForDate(state, selected);
   const summary = daySummary(tasks);
   const advanced = state.settings.taskMode === 'advanced';
+
+  function toggle(task: Task) {
+    setState(toggleTask(state, task.id));
+    // Celebrate only completions, never un-completions. If this was the last
+    // one open, the whole day is done — the bigger moment.
+    if (task.done) return;
+    const remaining = tasks.filter((x) => !x.done && x.id !== task.id).length;
+    onCelebrate(remaining === 0 ? 'all' : 'one');
+  }
 
   function remove(task: Task) {
     setState(removeTask(state, task.id));
@@ -39,7 +49,7 @@ export function Today({ state, setState }: Props) {
         key={task.id}
         task={task}
         showCategory={state.settings.skin === 'registon'}
-        onToggle={() => setState(toggleTask(state, task.id))}
+        onToggle={() => toggle(task)}
         onDelete={() => remove(task)}
       />
     );
@@ -117,6 +127,14 @@ export function Today({ state, setState }: Props) {
 
       {/* Below the day's work, never above it. */}
       <Support />
+
+      {/* Legal links also live on the store listing; here for anyone who
+          wants them without digging through Settings. */}
+      <div className="footlinks">
+        <a href="/privacy.html" target="_blank" rel="noreferrer">{t('set.privacy')}</a>
+        <span aria-hidden="true">·</span>
+        <a href="/terms.html" target="_blank" rel="noreferrer">{t('set.terms')}</a>
+      </div>
 
       <button className="fab" onClick={() => setAdding(true)} aria-label={t('add.title')}>
         <Icon name="plus" size={26} />

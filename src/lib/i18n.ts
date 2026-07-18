@@ -100,6 +100,37 @@ const STRINGS: Record<string, Entry> = {
   'add.save':        { uz: 'Saqlash',       tr: 'Kaydet',           en: 'Save' },
   'add.cancel':      { uz: 'Bekor qilish',  tr: 'İptal',            en: 'Cancel' },
 
+  /* --- Period plans (week / month / year) --- */
+  'plan.tab.week':  { uz: 'Hafta', tr: 'Hafta',  en: 'Week' },
+  'plan.tab.month': { uz: 'Oy',    tr: 'Ay',     en: 'Month' },
+  'plan.tab.year':  { uz: 'Yil',   tr: 'Yıl',    en: 'Year' },
+  'plan.add.week':  { uz: "Shu hafta rejasi…",  tr: 'Bu hafta planı…',  en: 'This week…' },
+  'plan.add.month': { uz: "Shu oy rejasi…",     tr: 'Bu ay planı…',     en: 'This month…' },
+  'plan.add.year':  { uz: "Shu yil maqsadi…",   tr: 'Bu yıl hedefi…',   en: 'This year…' },
+  'plan.empty.week': {
+    uz: "Bu haftaga reja yo'q. Bittasini qo'shing.",
+    tr: 'Bu hafta için plan yok. Bir tane ekleyin.',
+    en: 'No plans for this week yet. Add one.',
+  },
+  'plan.empty.month': {
+    uz: "Bu oyga reja yo'q. Bittasini qo'shing.",
+    tr: 'Bu ay için plan yok. Bir tane ekleyin.',
+    en: 'No plans for this month yet. Add one.',
+  },
+  'plan.empty.year': {
+    uz: "Bu yilga maqsad yo'q. Bittasini qo'shing.",
+    tr: 'Bu yıl için hedef yok. Bir tane ekleyin.',
+    en: 'No goals for this year yet. Add one.',
+  },
+
+  /* --- Completion celebration --- */
+  'celebrate.one': { uz: 'Barakalla! 👏', tr: 'Aferin! 👏', en: 'Nice work! 👏' },
+  'celebrate.all': {
+    uz: 'Bugun hammasi bajarildi! 🎉',
+    tr: 'Bugün her şey tamam! 🎉',
+    en: 'Everything done today! 🎉',
+  },
+
   /* --- Priorities (advanced task mode) --- */
   'pri.shoshilinch': { uz: 'Shoshilinch',          tr: 'Acil',              en: 'Urgent' },
   'pri.muhim':       { uz: 'Muhim',                tr: 'Önemli',            en: 'Must do' },
@@ -207,6 +238,14 @@ const STRINGS: Record<string, Entry> = {
     uz: "Marker — qog'ozdagidek marker bilan chizib qo'yiladi.",
     tr: 'Fosforlu kalem — kağıttaki gibi üzeri boyanır.',
     en: 'Highlighter strikes the task out the way you would on paper.',
+  },
+
+  /* --- Plan scopes --- */
+  'set.plans':      { uz: 'Rejalar',        tr: 'Planlar',      en: 'Plans' },
+  'set.plans.hint': {
+    uz: "Taqvim yonida qaysi reja bo'limlari ko'rinishini tanlang. Hammasini o'chirsangiz — faqat kunlik reja qoladi.",
+    tr: 'Takvim yanında hangi plan bölümlerinin görüneceğini seçin. Hepsini kapatırsanız yalnızca günlük plan kalır.',
+    en: 'Choose which plan sections appear beside the calendar. Turn all off for daily-only.',
   },
 
   /* --- Font --- */

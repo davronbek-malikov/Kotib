@@ -24,16 +24,16 @@ export interface Announcement {
 }
 
 export const ANNOUNCEMENT: Announcement | null = {
-  id: '2026-07-17-assistant-answers-anything',
+  id: '2026-07-17-period-plans',
   title: {
-    uz: 'AI yordamchi endi hamma savolga javob beradi 🤖',
-    tr: 'AI asistan artık her soruyu yanıtlıyor 🤖',
-    en: 'The AI assistant now answers anything 🤖',
+    uz: 'Haftalik, oylik va yillik rejalar 📅',
+    tr: 'Haftalık, aylık ve yıllık planlar 📅',
+    en: 'Weekly, monthly and yearly plans 📅',
   },
   body: {
-    uz: "Istalgan narsani so'rang — rejalaringizni ham biladi. Suhbat endi sahifa almashtirsangiz ham yo'qolmaydi. Yana: maxfiylik siyosati va har sahifada «Orqaga» tugmasi. Qayta o'rnatish shart emas.",
-    tr: 'Her şeyi sorun — planlarınızı da biliyor. Sohbet artık sekme değiştirince kaybolmuyor. Ayrıca: gizlilik politikası ve her sayfada «Geri» düğmesi. Yeniden yükleme yok.',
-    en: 'Ask it anything — it still knows your plans. Your chat no longer disappears when you switch tabs. Plus: a privacy policy and a Back button on every page. No reinstall needed.',
+    uz: "Taqvim sahifasida endi Hafta, Oy va Yil rejalari bor. Faqat kunlik reja istasangiz — Sozlamalar → Rejalar'dan o'chiring. AI yordamchi endi qaysi tilda so'rasangiz, o'sha tilda javob beradi. Vazifa bajarilganda — tabrik! Qayta o'rnatish shart emas.",
+    tr: "Takvim sayfasında artık Hafta, Ay ve Yıl planları var. Sadece günlük isterseniz Ayarlar → Planlar bölümünden kapatın. AI asistan artık hangi dilde sorarsanız o dilde yanıtlıyor. Görev bitince tebrik! Yeniden yükleme yok.",
+    en: "The Taqvim tab now has Week, Month and Year plans. Want daily only? Turn them off in Settings → Plans. The AI now replies in whatever language you ask in. Finish a task — a little cheer! No reinstall needed.",
   },
 };
 

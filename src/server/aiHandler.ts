@@ -81,11 +81,17 @@ QOIDALAR:
    eslatib turma — faqat mavzuga aloqador bo'lsa ayt.
 8. Qisqa va samimiy bo'l. Ortiqcha muqaddima yozma.`;
 
+/**
+ * Reply in the language the user wrote in — not the app's UI language. Someone
+ * with an Uzbek interface who types an English question wants an English answer.
+ * The UI language is only a tiebreaker for a message too short to tell (a bare
+ * "ok", an emoji).
+ */
 const LANG_NOTE: Record<string, string> = {
-  uz: "Javobni O'ZBEK tilida (lotin alifbosida) yoz.",
-  'uz-cyrl': "Javобни ЎЗБЕК тилида (крилл алифбосида) ёз.",
-  tr: 'Cevabı TÜRKÇE yaz.',
-  en: 'Answer in ENGLISH.',
+  uz: "Foydalanuvchi QAYSI TILDA yozgan bo'lsa, O'SHA TILDA javob ber (ingliz tilida so'rasa — inglizcha, rus tilida so'rasa — ruscha). Til noaniq bo'lsa, o'zbekcha (lotin) yoz.",
+  'uz-cyrl': "Фойдаланувчи ҚАЙСИ ТИЛДА ёзган бўлса, ЎША ТИЛДА жавоб бер. Тил ноаниқ бўлса, ўзбекча (крилл) ёз.",
+  tr: "Kullanıcı HANGİ DİLDE yazdıysa O DİLDE cevap ver. Dil belirsizse Türkçe yaz.",
+  en: "Reply in the SAME language the user wrote their question in. If it's unclear, use English.",
 };
 
 /** Never let a provider error surface as a stack trace to the user. */

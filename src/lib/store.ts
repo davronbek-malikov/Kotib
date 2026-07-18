@@ -7,11 +7,13 @@ import type {
   FontChoice,
   Language,
   NotificationSettings,
+  PeriodScope,
   Priority,
   ReminderOffset,
   Skin,
   Task,
   TaskMode,
+  TaskScope,
   ThemeMode,
   WeekStart,
 } from './types';
@@ -33,6 +35,8 @@ export function createInitialState(): AppState {
       taskMode: 'simple',
       doneStyle: 'chiziq',
       font: 'manrope',
+      // Period plans are available by default; a daily-only user turns them off.
+      planScopes: { week: true, month: true, year: true },
       lang: 'uz',
       weekStart: 'mon',
       notifications: {
@@ -126,26 +130,36 @@ export interface NewTask {
   date: string;
   time?: string;
   category: Category;
+  scope?: TaskScope;
   priority?: Priority;
   reminderOffsetMin?: ReminderOffset;
   checklistId?: string;
 }
 
 export function buildTask(t: NewTask): Task {
+  const scope = t.scope ?? 'day';
+  const isPeriod = scope !== 'day';
   return {
     id: nextId(),
     title: t.title.trim(),
     date: t.date,
-    time: t.time,
+    // A period plan has no clock time or reminder — it is a goal, not an event.
+    time: isPeriod ? undefined : t.time,
     category: t.category,
+    scope,
     // Tasks written in simple mode still need a bucket if the user later
     // switches to advanced — 'muhim' is the neutral default.
     priority: t.priority ?? 'muhim',
     done: false,
-    reminderOffsetMin: t.reminderOffsetMin,
+    reminderOffsetMin: isPeriod ? undefined : t.reminderOffsetMin,
     checklistId: t.checklistId,
     createdAt: Date.now(),
   };
+}
+
+/** A day task unless it carries a period scope. */
+function isDayTask(t: Task): boolean {
+  return (t.scope ?? 'day') === 'day';
 }
 
 export function addTask(s: AppState, t: NewTask): AppState {
@@ -187,10 +201,11 @@ export function updateTask(s: AppState, id: string, patch: TaskPatch): AppState 
   };
 }
 
-/** Timed tasks in clock order, then untimed ones ("Vaqtsiz"). */
+/** Timed tasks in clock order, then untimed ones ("Vaqtsiz"). Day tasks only —
+ *  a month plan anchored to the 1st must never leak into that day's list. */
 export function tasksForDate(s: AppState, dateISO: string): Task[] {
   return s.tasks
-    .filter((t) => t.date === dateISO)
+    .filter((t) => isDayTask(t) && t.date === dateISO)
     .sort((a, b) => {
       if (a.time && b.time) return a.time.localeCompare(b.time);
       if (a.time) return -1;
@@ -208,11 +223,26 @@ export function rollOverdue(s: AppState, todayISO: string): AppState {
   return {
     ...s,
     tasks: s.tasks.map((t) =>
-      !t.done && t.date < todayISO
+      // Period plans belong to their period and never roll — only day tasks do.
+      isDayTask(t) && !t.done && t.date < todayISO
         ? { ...t, date: todayISO, rolledFrom: t.rolledFrom ?? t.date }
         : t,
     ),
   };
+}
+
+/**
+ * Plans for one period (week / month / year), identified by the period's
+ * anchor date. Newest first, undone before done so the open goals lead.
+ */
+export function plansForPeriod(
+  s: AppState,
+  scope: TaskScope,
+  anchorISO: string,
+): Task[] {
+  return s.tasks
+    .filter((t) => t.scope === scope && t.date === anchorISO)
+    .sort((a, b) => Number(a.done) - Number(b.done) || b.createdAt - a.createdAt);
 }
 
 /**
@@ -343,6 +373,13 @@ export function setDoneStyle(s: AppState, doneStyle: DoneStyle): AppState {
 
 export function setFont(s: AppState, font: FontChoice): AppState {
   return { ...s, settings: { ...s.settings, font } };
+}
+
+export function setPlanScope(s: AppState, scope: PeriodScope, on: boolean): AppState {
+  return {
+    ...s,
+    settings: { ...s.settings, planScopes: { ...s.settings.planScopes, [scope]: on } },
+  };
 }
 
 export function setPriority(s: AppState, id: string, priority: Priority): AppState {

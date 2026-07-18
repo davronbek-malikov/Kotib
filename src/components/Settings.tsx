@@ -4,11 +4,13 @@ import { t } from '../lib/i18n';
 import { Icon, type IconName } from '../icons/Icon';
 import { OptionList, SettingsRow, type Tone } from './SettingsRow';
 import {
-  createInitialState, exportJSON, importJSON, setDoneStyle, setFont,
+  createInitialState, exportJSON, importJSON, setDoneStyle, setFont, setPlanScope,
   setLanguage, setNotifications, setSkin, setTaskMode, setTheme, setWeekStart,
 } from '../lib/store';
-import type {
-  AppState, DoneStyle, FontChoice, Language, Skin, TaskMode, ThemeMode, WeekStart,
+import {
+  PERIOD_SCOPES,
+  type AppState, type DoneStyle, type FontChoice, type Language, type Skin,
+  type TaskMode, type ThemeMode, type WeekStart,
 } from '../lib/types';
 
 /** Uzbek Latin first — it is the default (plan.md §3.5). */
@@ -25,7 +27,7 @@ const LANGS: { id: Language; label: string }[] = [
  * render its own key — the i18n test guards that.
  */
 type Page =
-  | 'index' | 'theme' | 'skin' | 'font' | 'taskMode'
+  | 'index' | 'theme' | 'skin' | 'font' | 'taskMode' | 'plans'
   | 'doneStyle' | 'weekStart' | 'notifications' | 'language' | 'data' | 'about';
 
 type IndexPage = Exclude<Page, 'index'>;
@@ -82,6 +84,13 @@ export function Settings({ state, setState, onBack }: Props) {
     if (notifications.sound) parts.push(t('set.notif.sound'));
     if (notifications.voice) parts.push(t('set.notif.voice'));
     return parts.join(' · ');
+  }
+
+  /** Which plan scopes are on, for the index row. */
+  function planScopesValue(): string {
+    const on = PERIOD_SCOPES.filter((sc) => settings.planScopes[sc]);
+    if (on.length === 0) return t('set.notif.off');
+    return on.map((sc) => t(`plan.tab.${sc}`)).join(' · ');
   }
 
   if (page !== 'index') {
@@ -161,6 +170,24 @@ export function Settings({ state, setState, onBack }: Props) {
               </li>
             </ul>
             <p className="hint">{t('set.doneStyle.hint')}</p>
+          </>
+        )}
+
+        {page === 'plans' && (
+          <>
+            <div className="sgroup">
+              {PERIOD_SCOPES.map((scope) => (
+                <label key={scope} className="orow">
+                  <span className="srow__title">{t(`plan.tab.${scope}`)}</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.planScopes[scope]}
+                    onChange={(e) => setState(setPlanScope(state, scope, e.target.checked))}
+                  />
+                </label>
+              ))}
+            </div>
+            <p className="hint">{t('set.plans.hint')}</p>
           </>
         )}
 
@@ -300,6 +327,10 @@ export function Settings({ state, setState, onBack }: Props) {
       {
         page: 'taskMode', icon: 'lists', tone: 'green', title: t('set.taskMode'),
         value: t(`set.taskMode.${settings.taskMode}`),
+      },
+      {
+        page: 'plans', icon: 'flag', tone: 'orange', title: t('set.plans'),
+        value: planScopesValue(),
       },
       {
         page: 'doneStyle', icon: 'check', tone: 'teal', title: t('set.doneStyle'),

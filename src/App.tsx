@@ -12,6 +12,7 @@ import { announcementText, pendingAnnouncement } from './lib/announcement';
 import { APK_URL, nativeUpdateNeeded } from './lib/appVersion';
 import { createBridge, isNative } from './lib/bridge';
 import { playChime } from './lib/chime';
+import { celebrateFeedback, tapFeedback } from './lib/haptics';
 import { todayISO } from './lib/dates';
 import { setLang, t } from './lib/i18n';
 import { setIconSkin } from './icons/Icon';
@@ -68,6 +69,21 @@ export default function App() {
   }, []);
 
   const bridge = useMemo(() => createBridge(onFire), [onFire]);
+
+  // A brief, self-dismissing "well done" when a task is completed. 'all' is the
+  // bigger moment — the whole day cleared.
+  const [cheer, setCheer] = useState<'one' | 'all' | null>(null);
+  const celebrate = useCallback((kind: 'one' | 'all') => {
+    setCheer(kind);
+    if (kind === 'all') celebrateFeedback();
+    else tapFeedback();
+  }, []);
+
+  useEffect(() => {
+    if (!cheer) return;
+    const timer = setTimeout(() => setCheer(null), cheer === 'all' ? 2600 : 1500);
+    return () => clearTimeout(timer);
+  }, [cheer]);
 
   // Restore the native mirror only into an install with no data of its own.
   useEffect(() => {
@@ -126,13 +142,15 @@ export default function App() {
 
   const screen = useMemo(() => {
     switch (tab) {
-      case 'today':    return <Today state={state} setState={setState} />;
-      case 'calendar': return <Calendar state={state} setState={setState} />;
+      case 'today':    return <Today state={state} setState={setState} onCelebrate={celebrate} />;
+      case 'calendar': return <Calendar state={state} setState={setState} onComplete={() => celebrate('one')} />;
       case 'lists':    return <Checklists state={state} setState={setState} />;
       case 'chat':     return <Chat state={state} turns={turns} setTurns={setTurns} />;
       case 'settings':
         return <Settings state={state} setState={setState} onBack={() => setTab(prevTab)} />;
     }
+    // celebrate is stable (useCallback), so it need not be a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, state, turns, prevTab]);
 
   return (
@@ -182,6 +200,12 @@ export default function App() {
             <Icon name="settings" size={20} />
           </button>
         </header>
+      )}
+
+      {cheer && (
+        <div className={`cheer cheer--${cheer}`} role="status">
+          {t(cheer === 'all' ? 'celebrate.all' : 'celebrate.one')}
+        </div>
       )}
 
       {screen}

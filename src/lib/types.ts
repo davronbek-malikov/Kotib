@@ -20,6 +20,17 @@ export type TaskMode = 'simple' | 'advanced';
 export type Priority = 'shoshilinch' | 'muhim' | 'rivojlanish' | 'kam';
 
 /**
+ * A task's planning horizon. 'day' is an ordinary dated task; the others are
+ * goals for a whole week, month or year. A period plan stores its period's
+ * anchor date (Monday of the week, the 1st of the month, Jan 1 of the year).
+ */
+export type TaskScope = 'day' | 'week' | 'month' | 'year';
+
+/** The period scopes shown beside the calendar, each toggleable in Settings. */
+export const PERIOD_SCOPES = ['week', 'month', 'year'] as const;
+export type PeriodScope = (typeof PERIOD_SCOPES)[number];
+
+/**
  * How a completed task reads. 'marker' mimics striking a line through with a
  * highlighter, which is what people actually do on paper.
  */
@@ -48,6 +59,8 @@ export interface Task {
   /** "HH:mm" — absent means an untimed task ("Vaqtsiz"). */
   time?: string;
   category: Category;
+  /** Absent means 'day' — an ordinary dated task. See TaskScope. */
+  scope?: TaskScope;
   /** Only surfaced in 'advanced' task mode; defaults to 'muhim'. */
   priority?: Priority;
   done: boolean;
@@ -87,6 +100,8 @@ export interface AppSettings {
   taskMode: TaskMode;
   doneStyle: DoneStyle;
   font: FontChoice;
+  /** Which period-plan tabs are shown. All off = daily-only, calendar as before. */
+  planScopes: Record<PeriodScope, boolean>;
   lang: Language;
   weekStart: WeekStart;
   notifications: NotificationSettings;

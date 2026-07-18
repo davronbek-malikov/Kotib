@@ -127,3 +127,67 @@ export function formatLongDate(dateISO: string): string {
   // Uzbek uses the "16-iyul" ordinal-dash form.
   return `${weekday}, ${d}-${monthName(m - 1)}`;
 }
+
+/* --- Period plan anchors: the one date that identifies a week / month / year.
+   Storing the anchor lets a period plan reuse the same `date` field as a day
+   task while never colliding with one (the store filters by scope). --- */
+
+function parseISO(dateISO: string): Date {
+  const [y, m, d] = dateISO.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+export function weekAnchor(dateISO: string, weekStart: WeekStart): string {
+  return toISODate(startOfWeek(parseISO(dateISO), weekStart));
+}
+
+export function monthAnchor(dateISO: string): string {
+  return `${dateISO.slice(0, 7)}-01`;
+}
+
+export function yearAnchor(dateISO: string): string {
+  return `${dateISO.slice(0, 4)}-01-01`;
+}
+
+/** Move a period anchor forward/back by whole weeks / months / years. */
+export function shiftPeriod(
+  anchorISO: string,
+  scope: 'week' | 'month' | 'year',
+  by: number,
+): string {
+  const d = parseISO(anchorISO);
+  if (scope === 'week') d.setDate(d.getDate() + by * 7);
+  else if (scope === 'month') d.setMonth(d.getMonth() + by);
+  else d.setFullYear(d.getFullYear() + by);
+  return toISODate(d);
+}
+
+/** "13–19-iyul" — the week's span, collapsing a shared month. */
+export function weekLabel(anchorISO: string): string {
+  const start = parseISO(anchorISO);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+  const sd = start.getDate();
+  const ed = end.getDate();
+  const lang = getLang();
+  const sep = lang === 'tr' || lang === 'en' ? '–' : '–';
+  if (start.getMonth() === end.getMonth()) {
+    const mon = monthName(start.getMonth());
+    return lang === 'uz' || lang === 'uz-cyrl'
+      ? `${sd}${sep}${ed}-${mon}`
+      : `${sd}${sep}${ed} ${mon}`;
+  }
+  return `${sd} ${monthName(start.getMonth())} ${sep} ${ed} ${monthName(end.getMonth())}`;
+}
+
+/** "Iyul 2026" */
+export function monthLabel(anchorISO: string): string {
+  const [y, m] = anchorISO.split('-').map(Number);
+  const mon = monthName(m - 1);
+  return `${mon.charAt(0).toUpperCase()}${mon.slice(1)} ${y}`;
+}
+
+/** "2026" */
+export function yearLabel(anchorISO: string): string {
+  return anchorISO.slice(0, 4);
+}

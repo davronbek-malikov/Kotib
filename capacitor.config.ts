@@ -2,7 +2,11 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   // PERMANENT. Changing appId forces every user to uninstall and reinstall.
-  appId: 'com.yordamchi.app',
+  // com.yordamchi.app was already taken by another developer on Google Play
+  // (its androidx-startup authority collided), so the Play listing uses
+  // com.uzyordamchi.app. Changed here BEFORE any Play publication, which is the
+  // only safe moment — no Play install exists yet to strand.
+  appId: 'com.uzyordamchi.app',
   // Display name only — safe to change on a rebrand. Mirrors lib/branding.ts.
   appName: 'Kotib',
   webDir: 'dist',

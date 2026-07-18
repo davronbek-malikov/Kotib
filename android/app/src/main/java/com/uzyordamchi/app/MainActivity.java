@@ -1,4 +1,4 @@
-package com.yordamchi.app;
+package com.uzyordamchi.app;
 
 import com.getcapacitor.BridgeActivity;
 

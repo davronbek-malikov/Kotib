@@ -254,6 +254,52 @@ describe('App smoke', () => {
     expect(within(nav).getByText('Taqvim').closest('button')?.className).toContain('is-active');
   });
 
+  it('shows the period-plan tabs on Taqvim and adds a monthly plan', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('Taqvim'));
+    // Segmented control offers the period scopes.
+    await user.click(screen.getByRole('tab', { name: 'Oy' }));
+
+    await user.type(
+      screen.getByPlaceholderText(/Shu oy rejasi/),
+      'Loyihani tugatish{Enter}',
+    );
+
+    expect(screen.getByText('Loyihani tugatish')).toBeTruthy();
+  });
+
+  it('hides all plan tabs when a daily-only user turns them off', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await openSetting(user, /^Rejalar/);
+    // Turn off all three scopes.
+    for (const label of ['Hafta', 'Oy', 'Yil']) {
+      const box = screen.getByText(label).closest('label')!.querySelector('input')!;
+      if ((box as HTMLInputElement).checked) await user.click(box);
+    }
+    await user.click(screen.getByLabelText('Orqaga'));
+    await user.click(screen.getByText('Taqvim'));
+
+    // No segmented control — Taqvim is just the calendar again.
+    expect(screen.queryByRole('tab')).toBeNull();
+  });
+
+  it('celebrates when a task is completed', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByLabelText('Yangi vazifa'));
+    await user.type(screen.getByPlaceholderText('Nima qilasiz?'), 'Yagona ish');
+    await user.click(screen.getByRole('button', { name: 'Saqlash' }));
+
+    await user.click(screen.getByLabelText('Bajarildi'));
+    // Last (only) task done -> the whole-day cheer.
+    expect(await screen.findByText(/Bugun hammasi bajarildi/)).toBeTruthy();
+  });
+
   it('links the privacy policy and terms — Google Play requires them', async () => {
     const user = userEvent.setup();
     render(<App />);

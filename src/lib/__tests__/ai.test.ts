@@ -112,6 +112,23 @@ describe('handleAi', () => {
     vi.unstubAllGlobals();
   });
 
+  it('tells the model to reply in the question\'s language, not the UI language', async () => {
+    // The bug: an Uzbek UI forced Uzbek answers even to English questions.
+    const fetchMock = vi.fn(async () =>
+      new Response(JSON.stringify({ choices: [{ message: { content: 'ok' } }] }), { status: 200 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    // UI language is Uzbek, but the instruction must be "match the user".
+    await handleAi({ ...body, lang: 'uz' }, { GROQ_API_KEY: 'k' });
+
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    const system = (JSON.parse(init.body as string) as { messages: { content: string }[] })
+      .messages[0].content;
+    expect(system).toContain('QAYSI TILDA');
+    vi.unstubAllGlobals();
+  });
+
   it('tells the model to answer general questions from its own knowledge', async () => {
     // The assistant refused world knowledge ("Kontekstda Fransiya poytaxti
     // haqida ma'lumot yo'q") because the prompt applied the no-invention rule

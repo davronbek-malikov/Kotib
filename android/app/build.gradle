@@ -9,14 +9,14 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.yordamchi.app"
+    namespace = "com.uzyordamchi.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.yordamchi.app"
+        applicationId "com.uzyordamchi.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "0.4.0"
+        versionCode 4
+        versionName "0.7.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

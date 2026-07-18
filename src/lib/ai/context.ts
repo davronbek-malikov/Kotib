@@ -23,6 +23,8 @@ const APP_GUIDE = {
       "Oylik ko'rinish. Nuqta = o'sha kunda vazifa bor, halqa = hammasi bajarilgan. Kunni bosing — o'sha kunning vazifalari ochiladi va ＋ orqali o'sha kunga vazifa qo'shiladi.",
     "Ro'yxatlar":
       "Qayta ishlatiladigan belgilar ro'yxatlari (masalan 'Bozorlik'). Element qo'shish, belgilash, tartibini o'zgartirish (↑↓), o'chirish mumkin. 'Yana boshlash' hamma belgini tozalaydi, elementlar qoladi.",
+    Taqvim_rejalar:
+      "Taqvim sahifasi tepasida almashtirgich bor: Taqvim (oylik kalendar), Hafta, Oy, Yil. Hafta/Oy/Yil — davriy rejalar (maqsadlar) ro'yxati; ‹ › bilan davrni almashtiriladi. Qaysi davrlar ko'rinishi Sozlamalar → Rejalar'da tanlanadi.",
     'AI yordamchi': 'Shu suhbat. Rejalar, sanalar va ilova haqida savol berish mumkin.',
     Sozlamalar:
       "Yuqoridagi ⚙ tugmasi orqali ochiladi. Ko'rinish (Yorug'/Qorong'i/Avto), Uslub (Klassik/Registon), Vazifa rejimi (Oddiy/Kengaytirilgan), Bajarilgan vazifa ko'rinishi, Shrift, Til, Eslatmalar, Hafta boshi, zaxira nusxa.",
@@ -51,6 +53,7 @@ export interface AiContext {
   bugun: { sana: string; hafta_kuni: string };
   sozlamalar: object;
   vazifalar: object[];
+  rejalar: object[];
   royxatlar: object[];
   ilova: object;
 }
@@ -83,7 +86,8 @@ export function buildContext(s: AppState, now: Date = new Date()): AiContext {
       eslatmalar: s.settings.notifications,
     },
     vazifalar: s.tasks
-      .filter((t) => t.date >= fromISO && t.date <= toISO)
+      // Day tasks only — period plans are listed separately as "rejalar".
+      .filter((t) => (t.scope ?? 'day') === 'day' && t.date >= fromISO && t.date <= toISO)
       .sort((a, b) => a.date.localeCompare(b.date) || (a.time ?? '').localeCompare(b.time ?? ''))
       .map((t) => ({
         nomi: t.title,
@@ -94,6 +98,16 @@ export function buildContext(s: AppState, now: Date = new Date()): AiContext {
         bajarilgan: t.done,
         eslatma_daqiqa: t.reminderOffsetMin ?? null,
         kechikkan: t.rolledFrom ?? null,
+      })),
+    rejalar: s.tasks
+      .filter((t) => t.scope && t.scope !== 'day')
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((t) => ({
+        nomi: t.title,
+        // 'week' | 'month' | 'year' — the plan's horizon.
+        muddat: t.scope,
+        davr_boshi: t.date,
+        bajarilgan: t.done,
       })),
     royxatlar: s.checklists.map((c) => ({
       nomi: c.name,
