@@ -112,6 +112,42 @@ describe('handleAi', () => {
     vi.unstubAllGlobals();
   });
 
+  it('forces English when the question is clearly English, even with an Uzbek UI', async () => {
+    const fetchMock = vi.fn(async () =>
+      new Response(JSON.stringify({ choices: [{ message: { content: 'ok' } }] }), { status: 200 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await handleAi(
+      { question: 'What are my plans for this week?', lang: 'uz', context: {} },
+      { GROQ_API_KEY: 'k' },
+    );
+
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    const msgs = (JSON.parse(init.body as string) as { messages: { content: string }[] }).messages;
+    // The trailing reminder must explicitly demand English.
+    expect(msgs[msgs.length - 1].content).toContain('Reply ENTIRELY in English');
+    vi.unstubAllGlobals();
+  });
+
+  it('does not mistake an Uzbek question for English', async () => {
+    const fetchMock = vi.fn(async () =>
+      new Response(JSON.stringify({ choices: [{ message: { content: 'ok' } }] }), { status: 200 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    // Uses Uzbek markers (bugun, rejalarim) — must not trip the English path.
+    await handleAi(
+      { question: 'Bugun rejalarim nima?', lang: 'uz', context: {} },
+      { GROQ_API_KEY: 'k' },
+    );
+
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    const msgs = (JSON.parse(init.body as string) as { messages: { content: string }[] }).messages;
+    expect(msgs[msgs.length - 1].content).not.toContain('Reply ENTIRELY in English');
+    vi.unstubAllGlobals();
+  });
+
   it('tells the model to reply in the question\'s language, not the UI language', async () => {
     // The bug: an Uzbek UI forced Uzbek answers even to English questions.
     const fetchMock = vi.fn(async () =>

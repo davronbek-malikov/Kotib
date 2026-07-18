@@ -103,6 +103,24 @@ const LANG_NOTE: Record<string, string> = {
   en: "Reply in the SAME language the user wrote their question in. If it's unclear, use English.",
 };
 
+/**
+ * English and Uzbek Latin share an alphabet, so the model — steeped in an
+ * Uzbek persona — tends to answer a clearly-English question in Uzbek anyway.
+ * Prompt wording alone did not fix it. This spots unambiguous English (common
+ * English words, no Uzbek markers) and forces an English answer. It stays
+ * silent on anything ambiguous, leaving those to the model (Russian, Turkish
+ * and Cyrillic are distinct enough that the prompt handles them).
+ */
+const EN_WORDS = /\b(the|what|when|where|which|how|why|is|are|am|my|me|you|your|can|do|does|did|please|write|give|tell|show|make|help|about|this|that|for|and|with|have|need|want|today|tomorrow|week|month|year|plan|plans|task|tasks)\b/gi;
+const UZ_MARKERS = /(o'|g'|\b(men|sen|siz|bugun|ertaga|indin|reja|rejalar|vazifa|nima|qanday|qachon|bor|yo'q|kerak|qil|ber|menga|mening|hafta|oy|yil)\b)/i;
+
+function looksEnglish(text: string): boolean {
+  if (UZ_MARKERS.test(text)) return false;
+  if (/[а-яёçğışöü]/i.test(text)) return false; // Cyrillic or Turkish letters
+  const hits = text.match(EN_WORDS)?.length ?? 0;
+  return hits >= 2;
+}
+
 /** Never let a provider error surface as a stack trace to the user. */
 export async function handleAi(body: AiRequestBody, env: AiEnv): Promise<AiResult> {
   const key = env.GROQ_API_KEY;
@@ -122,11 +140,14 @@ export async function handleAi(body: AiRequestBody, env: AiEnv): Promise<AiResul
 
   // A short reminder placed just before the answer, where recency makes the
   // model weight it most — the reply's language is decided by the question.
+  // When the question is unmistakably English, say so outright, since that is
+  // the case the model gets wrong.
   const langReminder = {
     role: 'system' as const,
-    content:
-      'Reminder: reply in the SAME language as the user\'s message above. ' +
-      'Do not default to Uzbek if they wrote in another language.',
+    content: looksEnglish(body.question)
+      ? 'The user wrote in English. Reply ENTIRELY in English — no Uzbek words at all.'
+      : "Reminder: reply in the SAME language as the user's message above. " +
+        'Do not default to Uzbek if they wrote in another language.',
   };
 
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
